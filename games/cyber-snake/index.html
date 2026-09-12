@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>CYBER SNAKE // 赛博贪吃蛇</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%2305070e'/><rect x='6' y='12' width='8' height='8' fill='%2300f0ff'/><rect x='16' y='12' width='8' height='8' fill='%23ff2bd6'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <div id="scanlines" aria-hidden="true"></div>
+  <div id="flash" aria-hidden="true"></div>
+
+  <header class="hud">
+    <div class="panel panel-left">
+      <div class="label">SCORE</div>
+      <div class="value" id="score">0</div>
+      <div class="sub"><span id="length-val">3</span> UNITS</div>
+    </div>
+    <div class="panel panel-right">
+      <div class="label">HIGH</div>
+      <div class="value" id="high-score">0</div>
+      <div class="sub">LV <span id="level">1</span> · SPD <span id="speed-display">1.0x</span></div>
+    </div>
+  </header>
+
+  <div class="hud-bottom">
+    <div class="hint">↑↓←→ / WASD 相对转向 · SPACE 暂停 · R 重开</div>
+    <div class="status" id="status-text">STANDBY</div>
+  </div>
+
+  <!-- Start overlay -->
+  <div class="overlay show" id="overlay-start">
+    <div class="modal">
+      <div class="modal-tag">NEON PROTOCOL v1.0</div>
+      <h1 class="modal-title">CYBER<br />SNAKE</h1>
+      <p class="modal-desc">在霓虹都市街道间穿梭，吞噬能量核心。<br />避开建筑楼体，也不要咬到自己。</p>
+      <div class="diff-row" id="diff-row" role="group" aria-label="难度">
+        <button type="button" class="diff-btn active" data-diff="easy">简单</button>
+        <button type="button" class="diff-btn" data-diff="medium">中等</button>
+        <button type="button" class="diff-btn" data-diff="hard">困难</button>
+      </div>
+      <p class="diff-hint" id="diff-hint">楼少路宽 · 节奏舒缓 · 适合熟悉操作</p>
+      <button class="btn-neon" id="btn-start" type="button">ENTER THE GRID</button>
+      <div class="modal-keys">ENTER / 点击开始</div>
+    </div>
+  </div>
+
+  <!-- Pause overlay -->
+  <div class="overlay" id="overlay-pause">
+    <div class="modal">
+      <div class="modal-tag">SYSTEM HOLD</div>
+      <h2 class="modal-title-sm">PAUSED</h2>
+      <p class="modal-desc">数据流已冻结</p>
+      <button class="btn-neon" id="btn-resume" type="button">RESUME</button>
+      <div class="modal-keys">SPACE 继续</div>
+    </div>
+  </div>
+
+  <!-- Game over overlay -->
+  <div class="overlay" id="overlay-over">
+    <div class="modal modal-danger">
+      <div class="modal-tag danger">SIGNAL LOST</div>
+      <h2 class="modal-title-sm">GAME OVER</h2>
+      <div class="result-grid">
+        <div>
+          <div class="label">SCORE</div>
+          <div class="value" id="final-score">0</div>
+        </div>
+        <div>
+          <div class="label">BEST</div>
+          <div class="value" id="final-best">0</div>
+        </div>
+        <div>
+          <div class="label">LEVEL</div>
+          <div class="value" id="final-level">1</div>
+        </div>
+      </div>
+      <p class="new-best hidden" id="new-best">★ NEW HIGH SCORE ★</p>
+      <div class="diff-row" id="diff-row-over" role="group" aria-label="难度">
+        <button type="button" class="diff-btn active" data-diff="easy">简单</button>
+        <button type="button" class="diff-btn" data-diff="medium">中等</button>
+        <button type="button" class="diff-btn" data-diff="hard">困难</button>
+      </div>
+      <button class="btn-neon danger" id="btn-restart" type="button">REBOOT</button>
+      <div class="modal-keys">选难度后点 REBOOT · R / ENTER 同难度重开</div>
+    </div>
+  </div>
+
+  <script src="assets/three.min.js"></script>
+  <script src="js/main.js?v=3"></script>
+</body>
+</html>

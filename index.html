@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="mks155 的个人主页 — 项目、实验与小游戏" />
+  <title>mks155 · Home</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0f1c'/><circle cx='16' cy='16' r='7' fill='%2300f0ff'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/home.css" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="logo" href="/">mks<span>155</span></a>
+    <nav class="nav">
+      <a href="#projects">项目</a>
+      <a href="#about">关于</a>
+      <a class="nav-cta" href="/games/cyber-snake/index.html">开始游戏</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">PERSONAL SITE · GITHUB PAGES</p>
+      <h1>你好，我是 <em>mks155</em></h1>
+      <p class="lead">
+        写代码、做实验、偶尔做点能玩的东西。<br />
+        这里放一些小项目和页面作品。
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/games/cyber-snake/index.html">游玩赛博贪吃蛇</a>
+        <a class="btn ghost" href="#projects">浏览项目</a>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <div class="section-head">
+        <h2>项目</h2>
+        <p>可在线打开的小作品</p>
+      </div>
+
+      <div class="cards">
+        <a class="card featured" href="/games/cyber-snake/index.html">
+          <div class="card-badge">LIVE</div>
+          <div class="card-art snake-art" aria-hidden="true">
+            <span class="orb"></span>
+            <span class="snake-seg s1"></span>
+            <span class="snake-seg s2"></span>
+            <span class="snake-seg s3"></span>
+          </div>
+          <div class="card-body">
+            <h3>Cyber Snake 3D</h3>
+            <p>赛博城市街道里的 3D 贪吃蛇。三种难度、霓虹天际线、流畅跟拍镜头。</p>
+            <span class="card-link">打开游戏 →</span>
+          </div>
+        </a>
+
+        <article class="card muted">
+          <div class="card-body">
+            <h3>更多作品</h3>
+            <p>后续会继续往这里添加页面与小工具。</p>
+            <span class="card-link dim">Coming soon</span>
+          </div>
+        </article>
+      </div>
+
+      <ul class="link-list">
+        <li>
+          <a href="/games/cyber-snake/index.html">Cyber Snake 3D（游戏页面）</a>
+          <code>/games/cyber-snake/index.html</code>
+        </li>
+        <li>
+          <a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">GitHub 仓库</a>
+          <code>github.com/mks155/mks155.github.io</code>
+        </li>
+      </ul>
+    </section>
+
+    <section id="about" class="section about">
+      <div class="section-head">
+        <h2>关于</h2>
+      </div>
+      <p class="about-text">
+        这是通过 <strong>GitHub Pages</strong> 托管的个人主页。
+        源码仓库：<a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">mks155/mks155.github.io</a>
+      </p>
+      <ul class="meta-list">
+        <li><span>托管</span> GitHub Pages</li>
+        <li><span>游戏页面</span> <a href="/games/cyber-snake/index.html">/games/cyber-snake/index.html</a></li>
+        <li><span>技术</span> HTML · CSS · Three.js</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> mks155</span>
+    <a href="https://github.com/mks155" target="_blank" rel="noopener">GitHub</a>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
