@@ -134,6 +134,83 @@ html, body {
   letter-spacing: 0.08em;
   color: var(--dim);
   opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+.hint-main {
+  opacity: 0.85;
+}
+
+.hint-key {
+  font-size: 13px;
+  color: var(--yellow);
+  letter-spacing: 0.1em;
+  opacity: 1;
+  text-shadow: 0 0 8px rgba(245, 255, 60, 0.35);
+  padding: 4px 10px;
+  border: 1px solid rgba(245, 255, 60, 0.35);
+  border-radius: 4px;
+  background: rgba(245, 255, 60, 0.06);
+  animation: hint-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes hint-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+kbd, .kbd-lg {
+  display: inline-block;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--yellow);
+  border-radius: 3px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+}
+
+.hint-key kbd {
+  padding: 1px 7px;
+  font-size: 12px;
+  margin: 0 2px;
+}
+
+.kbd-lg {
+  padding: 3px 10px;
+  font-size: 14px;
+  margin: 0 4px;
+  vertical-align: middle;
+}
+
+.back-home {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  font-family: "Orbitron", "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--cyan);
+  background: rgba(8, 14, 28, 0.9);
+  border: 1px solid rgba(0, 240, 255, 0.4);
+  border-radius: 999px;
+  text-decoration: none;
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.15);
+  pointer-events: auto;
+}
+
+.back-home:hover {
+  text-decoration: none;
+  color: var(--bg);
+  background: var(--cyan);
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.45);
 }
 
 .status {
@@ -358,10 +435,24 @@ html, body {
   color: var(--dim);
 }
 
+.modal-keys.strong {
+  font-size: 13px;
+  color: var(--yellow);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(245, 255, 60, 0.3);
+}
+
+/* Keep score panel clear of back-home pill */
+.hud .panel-left {
+  margin-left: 100px;
+}
+
 @media (max-width: 600px) {
   .hud { padding: 12px; }
   .panel { min-width: 104px; padding: 10px 12px; }
   .panel .value { font-size: 24px; }
-  .hint { font-size: 10px; max-width: 55%; }
+  .hint { font-size: 10px; }
   .hud-bottom { padding: 12px; }
+  .hud .panel-left { margin-left: 88px; }
+  .back-home { top: 10px; left: 10px; padding: 6px 10px; font-size: 10px; }
 }

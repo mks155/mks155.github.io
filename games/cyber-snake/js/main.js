@@ -44,6 +44,7 @@
     },
   };
   let difficultyKey = "easy";
+  const DIFFICULTY_ORDER = ["easy", "medium", "hard"];
   function diff() {
     return DIFFICULTIES[difficultyKey];
   }
@@ -921,6 +922,13 @@
     if (hint) hint.textContent = DIFFICULTIES[key].hint;
   }
 
+  function cycleDifficulty(step) {
+    const i = DIFFICULTY_ORDER.indexOf(difficultyKey);
+    const n = DIFFICULTY_ORDER.length;
+    const next = DIFFICULTY_ORDER[(i + step + n) % n];
+    setDifficulty(next);
+  }
+
   function showStartScreen() {
     state = "start";
     hideAllOverlays();
@@ -1026,9 +1034,11 @@
     } else if (k === "arrowleft" || k === "a") {
       e.preventDefault();
       if (state === "playing") turnLeft();
+      else if (state === "over" || state === "start") cycleDifficulty(-1);
     } else if (k === "arrowright" || k === "d") {
       e.preventDefault();
       if (state === "playing") turnRight();
+      else if (state === "over" || state === "start") cycleDifficulty(1);
     } else if (k === " " || k === "spacebar") {
       e.preventDefault();
       if (state === "playing" || state === "paused") togglePause();

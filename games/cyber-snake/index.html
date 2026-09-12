@@ -8,13 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 <body>
   <canvas id="game-canvas"></canvas>
 
   <div id="scanlines" aria-hidden="true"></div>
   <div id="flash" aria-hidden="true"></div>
+
+  <a class="back-home" href="/">← 主页</a>
 
   <header class="hud">
     <div class="panel panel-left">
@@ -30,7 +32,10 @@
   </header>
 
   <div class="hud-bottom">
-    <div class="hint">↑↓←→ / WASD 相对转向 · SPACE 暂停 · R 重开</div>
+    <div class="hint">
+      <span class="hint-main">↑↓←→ / WASD 转向 · SPACE 暂停</span>
+      <span class="hint-key">按 <kbd>R</kbd> 立即重开</span>
+    </div>
     <div class="status" id="status-text">STANDBY</div>
   </div>
 
@@ -47,7 +52,7 @@
       </div>
       <p class="diff-hint" id="diff-hint">楼少路宽 · 节奏舒缓 · 适合熟悉操作</p>
       <button class="btn-neon" id="btn-start" type="button">ENTER THE GRID</button>
-      <div class="modal-keys">ENTER / 点击开始</div>
+      <div class="modal-keys">A / D 或 ←→ 选难度 · ENTER 开始</div>
     </div>
   </div>
 
@@ -88,7 +93,7 @@
         <button type="button" class="diff-btn" data-diff="hard">困难</button>
       </div>
       <button class="btn-neon danger" id="btn-restart" type="button">REBOOT</button>
-      <div class="modal-keys">选难度后点 REBOOT · R / ENTER 同难度重开</div>
+      <div class="modal-keys strong">A / D 或 ←→ 切换难度 · 按 <kbd class="kbd-lg">R</kbd> 立即重开</div>
     </div>
   </div>
 

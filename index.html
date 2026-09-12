@@ -13,13 +13,17 @@
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
+  <div class="cursor-layer" aria-hidden="true">
+    <div class="cursor-ring" id="cursor-ring"></div>
+    <div class="cursor-dot" id="cursor-dot"></div>
+    <div class="cursor-trail" id="cursor-trail"></div>
+  </div>
 
   <header class="site-header">
     <a class="logo" href="/">mks<span>155</span></a>
     <nav class="nav">
       <a href="#projects">项目</a>
       <a href="#about">关于</a>
-      <a class="nav-cta" href="/games/cyber-snake/index.html">开始游戏</a>
     </nav>
   </header>
 
@@ -40,7 +44,6 @@
     <section id="projects" class="section">
       <div class="section-head">
         <h2>项目</h2>
-        <p>可在线打开的小作品</p>
       </div>
 
       <div class="cards">
@@ -53,19 +56,25 @@
             <span class="snake-seg s3"></span>
           </div>
           <div class="card-body">
+            <div class="card-cat">游戏</div>
             <h3>Cyber Snake 3D</h3>
             <p>赛博城市街道里的 3D 贪吃蛇。三种难度、霓虹天际线、流畅跟拍镜头。</p>
             <span class="card-link">打开游戏 →</span>
           </div>
         </a>
 
-        <article class="card muted">
-          <div class="card-body">
-            <h3>更多作品</h3>
-            <p>后续会继续往这里添加页面与小工具。</p>
-            <span class="card-link dim">Coming soon</span>
+        <a class="card" href="https://github.com/mks155/HuyaLiveOptimizer" target="_blank" rel="noopener">
+          <div class="card-badge github">GITHUB</div>
+          <div class="card-art huya-art" aria-hidden="true">
+            <span class="code-block">optimize()</span>
           </div>
-        </article>
+          <div class="card-body">
+            <div class="card-cat">工具</div>
+            <h3>HuyaLiveOptimizer</h3>
+            <p>虎牙直播相关优化工具。查看源码、说明与使用方式。</p>
+            <span class="card-link">在 GitHub 打开 →</span>
+          </div>
+        </a>
       </div>
 
       <ul class="link-list">
@@ -74,7 +83,11 @@
           <code>/games/cyber-snake/index.html</code>
         </li>
         <li>
-          <a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">GitHub 仓库</a>
+          <a href="https://github.com/mks155/HuyaLiveOptimizer" target="_blank" rel="noopener">HuyaLiveOptimizer</a>
+          <code>github.com/mks155/HuyaLiveOptimizer</code>
+        </li>
+        <li>
+          <a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">本站源码</a>
           <code>github.com/mks155/mks155.github.io</code>
         </li>
       </ul>
@@ -90,7 +103,6 @@
       </p>
       <ul class="meta-list">
         <li><span>托管</span> GitHub Pages</li>
-        <li><span>游戏页面</span> <a href="/games/cyber-snake/index.html">/games/cyber-snake/index.html</a></li>
         <li><span>技术</span> HTML · CSS · Three.js</li>
       </ul>
     </section>
@@ -103,6 +115,77 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    (function () {
+      const fine = window.matchMedia("(pointer: fine)").matches;
+      if (!fine) return;
+
+      const ring = document.getElementById("cursor-ring");
+      const dot = document.getElementById("cursor-dot");
+      const trail = document.getElementById("cursor-trail");
+      if (!ring || !dot || !trail) return;
+
+      const TRAIL_N = 10;
+      const dots = [];
+      for (let i = 0; i < TRAIL_N; i++) {
+        const el = document.createElement("span");
+        el.className = "trail-dot";
+        el.style.opacity = String(1 - i / TRAIL_N);
+        trail.appendChild(el);
+        dots.push({ el, x: 0, y: 0 });
+      }
+
+      let mx = window.innerWidth / 2;
+      let my = window.innerHeight / 2;
+      let rx = mx;
+      let ry = my;
+      let visible = false;
+
+      window.addEventListener("mousemove", (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+        if (!visible) {
+          visible = true;
+          rx = mx;
+          ry = my;
+          dots.forEach((d) => { d.x = mx; d.y = my; });
+          document.documentElement.classList.add("cursor-on");
+        }
+      }, { passive: true });
+
+      window.addEventListener("mouseleave", () => {
+        visible = false;
+        document.documentElement.classList.remove("cursor-on");
+      });
+
+      document.addEventListener("mouseover", (e) => {
+        const hot = e.target.closest("a, button, .btn, .card");
+        document.documentElement.classList.toggle("cursor-hot", !!hot);
+      });
+
+      function frame() {
+        // Glow sits on the real pointer; ring + trail lag behind
+        dot.style.transform = "translate(" + mx + "px," + my + "px) translate(-50%,-50%)";
+        rx += (mx - rx) * 0.18;
+        ry += (my - ry) * 0.18;
+        ring.style.transform = "translate(" + rx + "px," + ry + "px) translate(-50%,-50%)";
+
+        let px = rx;
+        let py = ry;
+        for (let i = 0; i < dots.length; i++) {
+          const d = dots[i];
+          d.x += (px - d.x) * 0.32;
+          d.y += (py - d.y) * 0.32;
+          d.el.style.transform = "translate(" + d.x + "px," + d.y + "px) translate(-50%,-50%) scale(" + (1 - i * 0.07) + ")";
+          px = d.x;
+          py = d.y;
+        }
+
+        requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    })();
   </script>
 </body>
 </html>

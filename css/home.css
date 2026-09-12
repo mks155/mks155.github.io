@@ -37,6 +37,73 @@ body {
   pointer-events: none;
 }
 
+/* Cyberpunk trail behind the native cursor */
+.cursor-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+html.cursor-on .cursor-layer {
+  opacity: 1;
+}
+
+.cursor-dot,
+.cursor-ring,
+.trail-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+/* Soft glow only — keep native cursor visible */
+.cursor-dot {
+  width: 22px;
+  height: 22px;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.28) 0%, transparent 68%);
+}
+
+.cursor-ring {
+  width: 42px;
+  height: 42px;
+  border: 1px dashed rgba(0, 240, 255, 0.35);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.08);
+  transition: width 0.18s ease, height 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+  opacity: 0.7;
+}
+
+html.cursor-hot .cursor-ring {
+  width: 56px;
+  height: 56px;
+  border-color: rgba(255, 43, 214, 0.55);
+  opacity: 1;
+}
+
+html.cursor-hot .cursor-dot {
+  background: radial-gradient(circle, rgba(255, 43, 214, 0.35) 0%, transparent 70%);
+}
+
+.trail-dot {
+  width: 7px;
+  height: 7px;
+  background: rgba(0, 240, 255, 0.45);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+html.cursor-hot .trail-dot {
+  background: rgba(255, 43, 214, 0.45);
+  box-shadow: 0 0 8px rgba(255, 43, 214, 0.3);
+}
+
+@media (pointer: coarse) {
+  .cursor-layer { display: none; }
+}
+
 a { color: var(--cyan); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
@@ -214,6 +281,18 @@ main {
   border-radius: 4px;
   font-weight: 700;
 }
+.card-badge.github {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-cat {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  margin-bottom: 6px;
+}
 
 .card-art {
   height: 120px;
@@ -247,6 +326,24 @@ main {
 .snake-art .s1 { left: 42px; }
 .snake-art .s2 { left: 74px; opacity: 0.85; }
 .snake-art .s3 { left: 106px; opacity: 0.65; }
+
+.huya-art {
+  background:
+    radial-gradient(circle at 30% 60%, rgba(255, 120, 40, 0.2), transparent 45%),
+    linear-gradient(160deg, #121828, #1a2030);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.huya-art .code-block {
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: #ffb36b;
+  border: 1px dashed rgba(255, 179, 107, 0.45);
+  padding: 10px 16px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.25);
+}
 
 .card-body { padding: 18px 18px 20px; }
 .card-body h3 {
