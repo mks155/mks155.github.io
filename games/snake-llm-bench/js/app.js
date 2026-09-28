@@ -48,6 +48,13 @@
     return raw;
   }
 
+  function formatTps(tps) {
+    if (tps === undefined || tps === null || tps === "") return "—";
+    const n = Number(tps);
+    if (isNaN(n)) return String(tps);
+    return n.toFixed(1) + " tok/s";
+  }
+
   function injectNoScroll(iframe) {
     if (!iframe) return;
     const apply = () => {
@@ -127,6 +134,7 @@
       <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
       <div class="stat"><span>量化</span><b>${escapeHtml(m.quant || "—")}</b></div>
       <div class="stat"><span>平台</span><b>${escapeHtml(m.backend || "local")}</b></div>
+      <div class="stat"><span>速度</span><b>${escapeHtml(formatTps(m.tps))}</b></div>
     </div>
     ${tags ? `<div class="meta-row">${tags}</div>` : ""}
     <div class="card-actions">

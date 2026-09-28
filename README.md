@@ -28,6 +28,7 @@ mks155 的个人主页（GitHub Pages）。
   quant: "Q4_K_M",
   params: "14B",
   backend: "llama.cpp",
+  tps: 54.5,
   uploadedAt: "2026-09-22",
   note: "一句话观察：交互、视觉、完成度。",
   tags: ["one-shot", "canvas"]
