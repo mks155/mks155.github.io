@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=15" />
+  <link rel="stylesheet" href="css/style.css?v=19" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -28,7 +28,7 @@
         <span class="pill">指令统一：<strong>写一个完整的贪吃蛇html</strong></span>
         <span class="pill">生成方式：<strong>一把出 / one-shot</strong></span>
         <span class="pill">已收录：<strong id="model-count">0</strong> 个产物</span>
-        <span class="pill status-live"><strong>持续更新中...</strong></span>
+        <span class="pill status-live" id="last-updated" title="最近一次新增或更新产物的时间">最后更新：<strong>—</strong></span>
       </div>
     </header>
 
@@ -45,9 +45,18 @@
 
     <div class="toolbar">
       <h2>MODEL <em>OUTPUTS</em></h2>
-      <div class="view-tabs">
-        <button class="tab-btn active" type="button" data-view="grid" id="tab-grid">卡片墙</button>
-        <button class="tab-btn" type="button" data-view="player" id="tab-player">专注试玩</button>
+      <div class="toolbar-controls">
+        <div class="sort-tabs" role="group" aria-label="排序方式">
+          <span class="ctrl-label">排序</span>
+          <button class="chip-btn active" type="button" data-sort="time" id="sort-time">上传时间</button>
+          <button class="chip-btn" type="button" data-sort="score" id="sort-score">跑分</button>
+          <button class="chip-btn chip-dir" type="button" id="sort-dir" title="切换升序 / 降序" aria-label="切换升序或降序">↑</button>
+        </div>
+        <div class="view-tabs" role="group" aria-label="展示方式">
+          <button class="tab-btn active" type="button" data-view="grid" id="tab-grid">卡片墙</button>
+          <button class="tab-btn" type="button" data-view="list" id="tab-list">列表</button>
+          <button class="tab-btn" type="button" data-view="player" id="tab-player">专注试玩</button>
+        </div>
       </div>
     </div>
 
@@ -58,6 +67,12 @@
     <div class="player-bar">
       <div class="player-actions">
         <button class="primary-btn" type="button" id="player-back">← 返回卡片墙</button>
+        <div class="player-switch" id="player-switch" hidden>
+          <button class="ghost-btn nav-btn" type="button" id="player-prev" title="上一个产物" aria-label="上一个产物">◀</button>
+          <label class="sr-only" for="player-select">切换产物</label>
+          <select id="player-select" class="player-select" title="切换到其他产物"></select>
+          <button class="ghost-btn nav-btn" type="button" id="player-next" title="下一个产物" aria-label="下一个产物">▶</button>
+        </div>
         <button class="ghost-btn" type="button" id="player-reload">刷新重载</button>
         <a class="download-btn" id="player-download" href="#" download title="下载源文件" aria-label="下载源文件">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -76,7 +91,8 @@
       <iframe id="player-frame" title="模型贪吃蛇试玩" sandbox="allow-scripts allow-same-origin allow-pointer-lock" scrolling="no"></iframe>
     </div>
     <div class="player-note">
-      点一下画面获取键盘焦点 · 方向键 / WASD · 部分支持触屏滑动
+      点一下画面获取键盘焦点 · 方向键 / WASD · 部分支持触屏滑动 ·
+      <span class="hint-extra">切产物：<kbd>◀</kbd><kbd>▶</kbd> 或下拉框 · 退出 <kbd>Esc</kbd></span>
     </div>
   </section>
 
@@ -84,7 +100,8 @@
     产物均为各本地模型一次生成的完整 HTML · 展示页仅做壳与索引
   </p>
 
-  <script src="js/models.js?v=5"></script>
-  <script src="js/app.js?v=5"></script>
+  <script src="js/rubric.js?v=4"></script>
+  <script src="js/models.js?v=10"></script>
+  <script src="js/app.js?v=12"></script>
 </body>
 </html>

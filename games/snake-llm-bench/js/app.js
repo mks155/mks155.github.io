@@ -1,5 +1,84 @@
 (function () {
-  const models = Array.isArray(window.SNAKE_LLM_MODELS) ? window.SNAKE_LLM_MODELS : [];
+  const RAW_MODELS = Array.isArray(window.SNAKE_LLM_MODELS) ? window.SNAKE_LLM_MODELS : [];
+
+  function parseTime(v) {
+    if (v === undefined || v === null || v === "") return Infinity;
+    if (typeof v === "number") return v;
+    const s = String(v).trim();
+    const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? Infinity : d.getTime();
+  }
+
+  // 统一按上传时间排序（旧的在前、新的在后）。
+  // 数组顺序写乱也不会影响展示顺序；同一天的条目保持 models.js 里的先后（稳定排序）。
+  const models = RAW_MODELS.map((m, i) => ({ m, i }))
+    .sort((a, b) => {
+      const da = parseTime(a.m.uploadedAt);
+      const db = parseTime(b.m.uploadedAt);
+      if (da !== db) return da - db;
+      return a.i - b.i;
+    })
+    .map((x) => x.m);
+
+  // ---- 排序状态：时间 / 跑分 × 升序 / 降序 ----
+  const SORTS = {
+    time: function (m) { return parseTime(m.uploadedAt); },
+    score: function (m) {
+      const r = m.review;
+      return r && typeof r.score === "number" ? r.score : -Infinity;
+    }
+  };
+
+  let sortKey = "time";
+  let sortDesc = false;
+  let viewState = "grid";
+  let currentId = null;
+
+  function ordered() {
+    const pick = SORTS[sortKey] || SORTS.time;
+    const dir = sortDesc ? -1 : 1;
+    return models
+      .map((m, i) => ({ m, i, k: pick(m) }))
+      .sort((a, b) => {
+        if (a.k !== b.k) return (a.k - b.k) * dir;
+        return a.i - b.i; // 同值保持稳定
+      })
+      .map((x) => x.m);
+  }
+
+  function loadPrefs() {
+    try {
+      const raw = localStorage.getItem(PREFS_KEY);
+      if (!raw) return;
+      const p = JSON.parse(raw);
+      if (p.sortKey && SORTS[p.sortKey]) sortKey = p.sortKey;
+      if (typeof p.sortDesc === "boolean") sortDesc = p.sortDesc;
+      if (["grid", "list", "player"].indexOf(p.view) >= 0) viewState = p.view;
+    } catch (e) { /* 忽略 */ }
+  }
+
+  function savePrefs() {
+    try {
+      localStorage.setItem(PREFS_KEY, JSON.stringify({
+        sortKey: sortKey, sortDesc: sortDesc, view: viewState
+      }));
+    } catch (e) { /* 忽略 */ }
+  }
+
+  function syncSortUI() {
+    document.querySelectorAll("[data-sort]").forEach((b) => {
+      b.classList.toggle("active", b.getAttribute("data-sort") === sortKey);
+    });
+    if (sortDirBtn) {
+      sortDirBtn.textContent = sortDesc ? "↓ 降序" : "↑ 升序";
+      sortDirBtn.classList.toggle("desc", sortDesc);
+      sortDirBtn.title = sortDesc
+        ? "当前降序，点击切换为升序"
+        : "当前升序，点击切换为降序";
+    }
+  }
   const cardsEl = document.getElementById("cards");
   const playerEl = document.getElementById("player");
   const countEl = document.getElementById("model-count");
@@ -10,7 +89,14 @@
   const reloadBtn = document.getElementById("player-reload");
   const backBtn = document.getElementById("player-back");
   const tabGrid = document.getElementById("tab-grid");
+  const tabList = document.getElementById("tab-list");
   const tabPlayer = document.getElementById("tab-player");
+  const sortDirBtn = document.getElementById("sort-dir");
+  const playerSelect = document.getElementById("player-select");
+  const playerSwitch = document.getElementById("player-switch");
+  const playerPrev = document.getElementById("player-prev");
+  const playerNext = document.getElementById("player-next");
+  const PREFS_KEY = "snake_bench_prefs";
   const footerNote = document.querySelector(".footer-note");
   const wrapEl = document.querySelector(".wrap");
   const backHome = document.querySelector(".back-home");
@@ -20,6 +106,22 @@
     "::-webkit-scrollbar{width:0!important;height:0!important;display:none!important}";
 
   if (countEl) countEl.textContent = String(models.length);
+
+  // 「最后更新」= 所有产物里最新的上传时间，自动跟随数据变化
+  function renderLastUpdated() {
+    var box = document.getElementById("last-updated");
+    if (!box) return;
+    var latest = models.reduce(function (acc, m) {
+      var t = parseTime(m.uploadedAt);
+      return t > acc.t ? { t: t, raw: m.uploadedAt } : acc;
+    }, { t: -Infinity, raw: null });
+    if (!latest.raw) return;
+    var m = String(latest.raw).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    var text = m ? m[1] + "-" + m[2] + "-" + m[3] : String(latest.raw);
+    var strong = box.querySelector("strong");
+    if (strong) strong.textContent = text;
+    else box.textContent = "最后更新：" + text;
+  }
 
   function quantClass(q) {
     const s = String(q || "").toUpperCase();
@@ -84,7 +186,9 @@
       return;
     }
 
-    cardsEl.innerHTML = models
+    const list = ordered();
+
+    cardsEl.innerHTML = list
       .map((m, i) => {
         const src = encodeURI(m.file);
         const tags = (m.tags || [])
@@ -129,6 +233,7 @@
         </svg>
       </a>
     </div>
+    ${renderBench(m)}
     <p>${escapeHtml(m.note || "")}</p>
     <div class="stat-grid">
       <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
@@ -157,10 +262,16 @@
   }
 
   function setView(view) {
+    const isPlayer = view === "player";
+    const isList = view === "list";
     const isGrid = view === "grid";
-    const isPlayer = !isGrid;
 
-    if (cardsEl) cardsEl.classList.toggle("hidden", isPlayer);
+    viewState = view;
+
+    if (cardsEl) {
+      cardsEl.classList.toggle("hidden", isPlayer);
+      cardsEl.classList.toggle("list-mode", isList);
+    }
     if (playerEl) {
       playerEl.classList.toggle("active", isPlayer);
       if (isPlayer) playerEl.removeAttribute("hidden");
@@ -171,14 +282,23 @@
     if (footerNote) footerNote.hidden = isPlayer;
     if (backHome) backHome.hidden = isPlayer;
     if (tabGrid) tabGrid.classList.toggle("active", isGrid);
+    if (tabList) tabList.classList.toggle("active", isList);
     if (tabPlayer) tabPlayer.classList.toggle("active", isPlayer);
+    if (backBtn) backBtn.textContent = isList ? "← 返回列表" : "← 返回卡片墙";
 
     if (isPlayer) injectNoScroll(frame);
+    savePrefs();
+  }
+
+  function currentIndex() {
+    const list = ordered();
+    return list.findIndex((m) => m.id === currentId);
   }
 
   function openPlayer(index) {
-    const m = models[index];
+    const m = ordered()[index];
     if (!m) return;
+    currentId = m.id;
     const src = encodeURI(m.file);
     const uploaded = formatUploadDate(m.uploadedAt);
     nameEl.textContent = m.name + (m.quant ? " · " + m.quant : "");
@@ -188,6 +308,7 @@
       downloadLink.setAttribute("download", fileBaseName(m.file) + ".html");
     }
     frame.src = src;
+    syncPlayerSwitch();
     setView("player");
     window.scrollTo(0, 0);
     setTimeout(() => {
@@ -195,6 +316,44 @@
         frame.contentWindow && frame.contentWindow.focus();
       } catch (_) {}
     }, 150);
+  }
+
+  // ---- 试玩页内切换产物 ----
+  function switchById(id) {
+    const list = ordered();
+    const idx = list.findIndex((m) => m.id === id);
+    if (idx >= 0) openPlayer(idx);
+  }
+
+  function step(delta) {
+    const list = ordered();
+    if (!list.length) return;
+    const cur = list.findIndex((m) => m.id === currentId);
+    const next = (((cur < 0 ? 0 : cur) + delta) % list.length + list.length) % list.length;
+    openPlayer(next);
+  }
+
+  function syncPlayerSwitch() {
+    if (playerSwitch) playerSwitch.hidden = false;
+    if (!playerSelect) return;
+    const list = ordered();
+    const sig = list.map((m) => m.id).join("|");
+    if (playerSelect.dataset.sig !== sig) {
+      playerSelect.innerHTML = list
+        .map((m) => {
+          const r = m.review || {};
+          const bits = [m.name];
+          if (m.quant) bits.push(m.quant);
+          if (typeof r.score === "number") bits.push(r.score + " 分");
+          return '<option value="' + escapeHtml(m.id) + '">' + escapeHtml(bits.join(" · ")) + "</option>";
+        })
+        .join("");
+      playerSelect.dataset.sig = sig;
+    }
+    if (currentId) playerSelect.value = currentId;
+    const multi = list.length > 1;
+    if (playerPrev) playerPrev.disabled = !multi;
+    if (playerNext) playerNext.disabled = !multi;
   }
 
   function closePlayer() {
@@ -220,12 +379,104 @@
       .replace(/'/g, "&#39;");
   }
 
-  if (tabGrid) tabGrid.addEventListener("click", () => setView("grid"));
-  if (tabPlayer) {
-    tabPlayer.addEventListener("click", () => {
-      if (models.length) openPlayer(0);
+  // ---- SNAKE SCORE 渲染（评分标准见 js/rubric.js）----
+  var RUBRIC = window.SNAKE_LLM_RUBRIC || null;
+
+  function axisMeta() {
+    if (RUBRIC && Array.isArray(RUBRIC.axes)) return RUBRIC.axes;
+    // rubric 未加载时的兜底，保证展示层不崩
+    return [
+      { key: "play", name: "可玩", max: 350 },
+      { key: "feel", name: "手感", max: 250 },
+      { key: "show", name: "视听", max: 250 },
+      { key: "done", name: "完成", max: 150 }
+    ];
+  }
+
+  function gradeLabel(grade) {
+    if (RUBRIC && Array.isArray(RUBRIC.grades)) {
+      for (var i = 0; i < RUBRIC.grades.length; i++) {
+        if (RUBRIC.grades[i].grade === grade) return RUBRIC.grades[i].label;
+      }
+    }
+    return "";
+  }
+
+  function renderBench(m) {
+    var r = m && m.review;
+    if (!r || !r.axes || typeof r.score !== "number") return "";
+
+    var bars = axisMeta()
+      .map(function (ax) {
+        var got = Number(r.axes[ax.key]) || 0;
+        var pct = Math.max(0, Math.min(100, (got / ax.max) * 100));
+        return (
+          '<div class="ba" title="' + escapeHtml(ax.name) + " " + got + "/" + ax.max + '">' +
+          '<span class="ba-l">' + escapeHtml(ax.name) + "</span>" +
+          '<span class="ba-bar"><i style="width:' + pct.toFixed(1) + '%"></i></span>' +
+          '<b class="ba-v">' + got + "</b>" +
+          "</div>"
+        );
+      })
+      .join("");
+
+    return (
+      '<div class="bench">' +
+      '<div class="bench-top">' +
+      '<span class="bench-tag">SNAKE SCORE</span>' +
+      '<b class="bench-num">' + r.score + "</b>" +
+      '<span class="bench-grade" data-g="' + escapeHtml(r.grade || "") + '">' +
+      escapeHtml((r.grade || "") + " " + gradeLabel(r.grade)).trim() +
+      "</span>" +
+      "</div>" +
+      '<div class="bench-axes">' + bars + "</div>" +
+      "</div>"
+    );
+  }
+
+  document.querySelectorAll("[data-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const v = btn.getAttribute("data-view");
+      if (v === "player") {
+        if (!models.length) return;
+        const cur = currentIndex();
+        openPlayer(cur >= 0 ? cur : 0);
+      } else {
+        setView(v);
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-sort]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const k = btn.getAttribute("data-sort");
+      if (!SORTS[k]) return;
+      // 再次点同一维度 → 切换升降序
+      if (sortKey === k) sortDesc = !sortDesc;
+      else { sortKey = k; sortDesc = false; }
+      syncSortUI();
+      renderCards();
+      syncPlayerSwitch();
+      savePrefs();
+    });
+  });
+
+  if (sortDirBtn) {
+    sortDirBtn.addEventListener("click", () => {
+      sortDesc = !sortDesc;
+      syncSortUI();
+      renderCards();
+      syncPlayerSwitch();
+      savePrefs();
     });
   }
+
+  if (playerSelect) {
+    playerSelect.addEventListener("change", () => switchById(playerSelect.value));
+  }
+  if (playerPrev) playerPrev.addEventListener("click", () => step(-1));
+  if (playerNext) playerNext.addEventListener("click", () => step(1));
+
   if (backBtn) backBtn.addEventListener("click", closePlayer);
   if (reloadBtn) {
     reloadBtn.addEventListener("click", () => {
@@ -243,9 +494,17 @@
   }
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && document.body.classList.contains("player-mode")) {
+    const inPlayer = document.body.classList.contains("player-mode");
+    if (e.key === "Escape" && inPlayer) {
       closePlayer();
+      return;
     }
+    // 试玩页内：左右方向键 / J K 切换产物
+    if (!inPlayer || !models.length) return;
+    const t = e.target;
+    if (t && (t.tagName === "SELECT" || t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+    if (e.key === "ArrowLeft" || e.key === "k" || e.key === "K") { step(-1); }
+    else if (e.key === "ArrowRight" || e.key === "j" || e.key === "J") { step(1); }
   });
 
   function applyHash() {
@@ -253,11 +512,18 @@
     const m = h.match(/m=([^&]+)/);
     if (!m) return;
     const id = decodeURIComponent(m[1]);
-    const idx = models.findIndex((x) => x.id === id);
-    if (idx >= 0) openPlayer(idx);
+    switchById(id);
   }
 
+  loadPrefs();
+  syncSortUI();
   renderCards();
+  renderLastUpdated();
   applyHash();
+  if (viewState === "player" && !currentId && models.length) {
+    openPlayer(0);
+  } else {
+    setView(viewState);
+  }
   window.addEventListener("hashchange", applyHash);
 })();
