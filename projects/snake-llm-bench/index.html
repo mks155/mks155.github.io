@@ -6,10 +6,9 @@
   <meta name="description" content="本地部署大模型一把出 HTML 写贪吃蛇的能力展示：并排试玩、对比完成度。" />
   <title>Snake LLM Bench · 本地大模型写贪吃蛇</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23070b14'/><path d='M8 10h8v4H12v8H8V10zm10 8h6v4h-6v-4z' fill='%2300f0ff'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=19" />
+  <link rel="stylesheet" href="../../../css/fonts.css" />
+  <link rel="stylesheet" href="../../../css/shell.css?v=1" />
+  <link rel="stylesheet" href="css/style.css?v=25" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -91,7 +90,7 @@
       <iframe id="player-frame" title="模型贪吃蛇试玩" sandbox="allow-scripts allow-same-origin allow-pointer-lock" scrolling="no"></iframe>
     </div>
     <div class="player-note">
-      点一下画面获取键盘焦点 · 方向键 / WASD · 部分支持触屏滑动 ·
+      <span class="hint-pc">点一下画面获取键盘焦点 · 方向键 / WASD · 部分支持触屏滑动 ·</span>
       <span class="hint-extra">切产物：<kbd>◀</kbd><kbd>▶</kbd> 或下拉框 · 退出 <kbd>Esc</kbd></span>
     </div>
   </section>
@@ -102,6 +101,6 @@
 
   <script src="js/rubric.js?v=4"></script>
   <script src="js/models.js?v=10"></script>
-  <script src="js/app.js?v=12"></script>
+  <script src="js/app.js?v=13"></script>
 </body>
 </html>

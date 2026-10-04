@@ -155,7 +155,7 @@ main {
 }
 
 .hero {
-  padding: 72px 0 56px;
+  padding: 108px 0 88px;
 }
 
 .eyebrow {
@@ -191,6 +191,44 @@ main {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+}
+
+/* Hero 状态药丸行 */
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+.hero-pills .pill {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--dim);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+.hero-pills .pill:first-child {
+  color: var(--cyan);
+  border-color: rgba(0, 240, 255, 0.35);
+  background: rgba(0, 240, 255, 0.07);
+}
+
+/* 卡片标签行 */
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 14px;
+}
+.tag-row .tag {
+  font-size: 0.75rem;
+  color: var(--dim);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 999px;
+  padding: 3px 11px;
 }
 
 .btn {
@@ -242,7 +280,9 @@ main {
 
 .cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  /* auto-fill + 更小的下限：让三张卡在常见桌面宽度下并排一行，
+     避免 auto-fit 把第三张挤到第二行留下空缺 */
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
   gap: 16px;
 }
 
@@ -281,12 +321,6 @@ main {
   border-radius: 4px;
   font-weight: 700;
 }
-.card-badge.github {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 .card-cat {
   font-size: 0.7rem;
   letter-spacing: 0.18em;
@@ -295,7 +329,7 @@ main {
 }
 
 .card-art {
-  height: 120px;
+  height: 176px;
   position: relative;
   background:
     radial-gradient(circle at 70% 40%, rgba(255, 43, 214, 0.25), transparent 40%),
@@ -305,45 +339,27 @@ main {
 
 .snake-art .orb {
   position: absolute;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--magenta);
   box-shadow: 0 0 18px var(--magenta);
-  top: 36px;
+  top: 58px;
   right: 48px;
 }
 
 .snake-art .snake-seg {
   position: absolute;
-  width: 28px;
-  height: 16px;
+  width: 34px;
+  height: 19px;
   border-radius: 3px;
   background: var(--cyan);
   box-shadow: 0 0 14px rgba(0, 240, 255, 0.7);
-  top: 52px;
+  top: 76px;
 }
 .snake-art .s1 { left: 42px; }
-.snake-art .s2 { left: 74px; opacity: 0.85; }
-.snake-art .s3 { left: 106px; opacity: 0.65; }
-
-.huya-art {
-  background:
-    radial-gradient(circle at 30% 60%, rgba(255, 120, 40, 0.2), transparent 45%),
-    linear-gradient(160deg, #121828, #1a2030);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.huya-art .code-block {
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  color: #ffb36b;
-  border: 1px dashed rgba(255, 179, 107, 0.45);
-  padding: 10px 16px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.25);
-}
+.snake-art .s2 { left: 78px; opacity: 0.85; }
+.snake-art .s3 { left: 114px; opacity: 0.65; }
 
 .card-body { padding: 18px 18px 20px; }
 .card-body h3 {
@@ -364,37 +380,6 @@ main {
 }
 .card-link.dim { color: var(--dim); }
 
-.link-list {
-  list-style: none;
-  margin-top: 20px;
-  display: grid;
-  gap: 8px;
-}
-.link-list li {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 16px;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.025);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-}
-.link-list a {
-  color: var(--cyan);
-  font-size: 0.95rem;
-  border-bottom: 1px solid rgba(0, 240, 255, 0.35);
-}
-.link-list a:hover {
-  border-bottom-color: var(--cyan);
-  text-decoration: none;
-}
-.link-list code {
-  font-size: 0.8rem;
-  color: var(--dim);
-  word-break: break-all;
-}
-
 .card.muted {
   opacity: 0.85;
   cursor: default;
@@ -407,30 +392,12 @@ main {
 
 .about-text {
   color: var(--dim);
-  max-width: 40em;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
+}
+.about-text:last-child {
+  margin-bottom: 0;
 }
 .about-text a { border-bottom: 1px solid rgba(0, 240, 255, 0.35); }
-
-.meta-list {
-  list-style: none;
-  display: grid;
-  gap: 8px;
-  font-size: 0.9rem;
-}
-.meta-list li {
-  display: flex;
-  gap: 14px;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-.meta-list span {
-  min-width: 5.5em;
-  color: var(--dim);
-  letter-spacing: 0.08em;
-}
 
 .site-footer {
   max-width: var(--max);
@@ -438,10 +405,23 @@ main {
   padding: 22px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   gap: 12px;
   color: var(--dim);
   font-size: 0.85rem;
+}
+
+/* 页脚里的 GitHub 链接 */
+.site-footer .footer-link {
+  color: var(--dim);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 0.15s ease;
+}
+.site-footer .footer-link:hover {
+  color: var(--cyan);
+  text-decoration-color: var(--cyan);
 }
 
 @media (max-width: 560px) {

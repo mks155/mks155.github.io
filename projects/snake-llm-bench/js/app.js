@@ -218,6 +218,12 @@
         <div class="card-cat">${escapeHtml(m.family || "LOCAL LLM")}</div>
         <h3>${escapeHtml(m.name)}${m.quant ? " · " + escapeHtml(m.quant) : ""}</h3>
         ${uploadMeta}
+        <div class="stat-grid">
+          <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
+          <div class="stat"><span>量化</span><b>${escapeHtml(m.quant || "—")}</b></div>
+          <div class="stat"><span>平台</span><b>${escapeHtml(m.backend || "local")}</b></div>
+          <div class="stat"><span>速度</span><b>${escapeHtml(formatTps(m.tps))}</b></div>
+        </div>
       </div>
       <a
         class="download-btn"
@@ -235,12 +241,6 @@
     </div>
     ${renderBench(m)}
     <p>${escapeHtml(m.note || "")}</p>
-    <div class="stat-grid">
-      <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
-      <div class="stat"><span>量化</span><b>${escapeHtml(m.quant || "—")}</b></div>
-      <div class="stat"><span>平台</span><b>${escapeHtml(m.backend || "local")}</b></div>
-      <div class="stat"><span>速度</span><b>${escapeHtml(formatTps(m.tps))}</b></div>
-    </div>
     ${tags ? `<div class="meta-row">${tags}</div>` : ""}
     <div class="card-actions">
       <button class="primary-btn" type="button" data-action="play">试玩</button>

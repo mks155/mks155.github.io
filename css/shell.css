@@ -1,0 +1,406 @@
+/* ============================================================
+ * Bench 共用外壳 · shell.css
+ * ------------------------------------------------------------
+ * projects/snake-llm-bench 与 projects/userscripts 共用的骨架：
+ *   设计令牌 / 背景网格 / 左上角返回 / 容器 / Hero 面板 /
+ *   meta-row 药丸 / 操作提示条 / 工具栏与视图切换 / 卡片墙 / 空态 / 页脚
+ *
+ * 页面专属样式（跑分块、试玩区、商店按钮等）留在各自的 style.css 里。
+ * 引入顺序：fonts.css → shell.css → 页面 style.css
+ * ============================================================ */
+
+:root {
+  --bg: #070b14;
+  --bg-soft: #0c1222;
+  --panel: rgba(12, 18, 34, 0.92);
+  --panel-2: rgba(16, 24, 44, 0.95);
+  --text: #d7ecf5;
+  --dim: #7a9bb0;
+  --cyan: #00f0ff;
+  --magenta: #ff2bd6;
+  --green: #3ddc84;
+  --warn: #ffc94d;
+  --danger: #ff5d73;
+  --border: rgba(0, 240, 255, 0.28);
+  --border-soft: rgba(0, 240, 255, 0.14);
+  --radius: 14px;
+  --max: 1080px;
+  --mono: "Share Tech Mono", "Segoe UI", Consolas, monospace;
+  --display: "Orbitron", "Share Tech Mono", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  min-height: 100vh;
+  font-family: var(--mono);
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 页面若有全屏模式（试玩区），由页面自己开这个 class */
+body.player-mode { overflow: hidden; height: 100vh; }
+
+/* ---------- 背景网格 ---------- */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(0, 240, 255, 0.1), transparent 55%),
+    radial-gradient(ellipse 45% 40% at 90% 70%, rgba(255, 43, 214, 0.07), transparent 50%),
+    linear-gradient(rgba(0, 240, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.035) 1px, transparent 1px);
+  background-size: auto, auto, 48px 48px, 48px 48px;
+  pointer-events: none;
+}
+
+body.player-mode .bg-grid { display: none; }
+
+/* ---------- 左上角返回主页 ---------- */
+.back-home {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  z-index: 50;
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(7, 11, 20, 0.75);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.14);
+  transition: box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.back-home:hover {
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
+}
+
+/* ---------- 容器 ---------- */
+.wrap {
+  width: min(var(--max), calc(100% - 32px));
+  margin: 0 auto;
+  padding: 72px 0 48px;
+}
+
+/* ---------- Hero 面板 ---------- */
+.hero {
+  margin-bottom: 28px;
+  padding: 28px 28px 24px;
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) + 4px);
+  background:
+    linear-gradient(135deg, rgba(0, 240, 255, 0.08), transparent 42%),
+    linear-gradient(315deg, rgba(255, 43, 214, 0.06), transparent 40%),
+    var(--panel);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 顶部一道青→品红渐变高光 */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta), transparent);
+}
+
+.eyebrow {
+  color: var(--cyan);
+  letter-spacing: 0.22em;
+  font-size: 12px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  font-family: var(--display);
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.hero h1 span {
+  color: var(--cyan);
+  text-shadow: 0 0 24px rgba(0, 240, 255, 0.35);
+}
+
+.hero p {
+  color: var(--dim);
+  max-width: 62ch;
+  font-size: 15px;
+}
+
+/* ---------- meta-row 药丸 ---------- */
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.pill {
+  border: 1px solid var(--border-soft);
+  background: rgba(0, 240, 255, 0.06);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.pill strong {
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+.pill.status-live {
+  border-color: rgba(61, 220, 132, 0.45);
+  background: rgba(61, 220, 132, 0.1);
+}
+
+.pill.status-live strong {
+  color: var(--green);
+}
+
+/* ---------- 操作提示条 ---------- */
+.controls-tip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: -4px 0 16px;
+  padding: 10px 14px;
+  border: 1px dashed rgba(0, 240, 255, 0.28);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(0, 240, 255, 0.07), transparent 55%),
+    rgba(10, 15, 28, 0.72);
+}
+
+.controls-tip .tip-label {
+  flex: 0 0 auto;
+  font-family: var(--display);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--cyan);
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.controls-tip p {
+  flex: 1 1 220px;
+  margin: 0;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.controls-tip strong { color: var(--text); }
+
+.controls-tip kbd,
+.controls-tip code {
+  display: inline-block;
+  min-width: 1.45em;
+  margin: 0 2px;
+  padding: 1px 6px;
+  border: 1px solid rgba(0, 240, 255, 0.28);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: rgba(7, 11, 20, 0.9);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  vertical-align: baseline;
+}
+
+.controls-tip code { color: var(--cyan); border-bottom-width: 1px; }
+
+/* ---------- 工具栏 ---------- */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 28px 0 16px;
+}
+
+.toolbar h2 {
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: 0.16em;
+}
+
+.toolbar h2 em {
+  font-style: normal;
+  color: var(--magenta);
+}
+
+.toolbar-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+/* ---------- 通用按钮 ---------- */
+.tab-btn,
+.ghost-btn,
+.primary-btn {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: 0.15s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tab-btn,
+.ghost-btn {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+}
+
+.tab-btn.active,
+.tab-btn:hover,
+.ghost-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.15);
+  background: rgba(0, 240, 255, 0.08);
+}
+
+.primary-btn {
+  color: #04141a;
+  background: linear-gradient(90deg, var(--cyan), #7cf7ff);
+  border: none;
+  font-weight: 700;
+}
+
+.primary-btn:hover {
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.view-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ---------- 卡片墙 ---------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.cards.hidden { display: none; }
+
+.card {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--panel);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 240, 255, 0.08);
+}
+
+.card-cat {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  margin-bottom: 5px;
+}
+
+.card h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  word-break: break-word;
+}
+
+/* ---------- 空态 ---------- */
+.howto-item {
+  border: 1px dashed rgba(0, 240, 255, 0.25);
+  border-radius: var(--radius);
+  background: rgba(12, 18, 34, 0.65);
+  padding: 16px;
+  grid-column: 1 / -1;
+}
+
+.howto-item h4 {
+  color: var(--cyan);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  font-family: var(--display);
+}
+
+.howto-item p {
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.howto-item code {
+  color: var(--warn);
+  background: rgba(255, 201, 77, 0.08);
+  border: 1px solid rgba(255, 201, 77, 0.2);
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 12px;
+}
+
+/* ---------- 页脚 ---------- */
+.footer-note {
+  margin-top: 20px;
+  margin-bottom: 8px;
+  color: var(--dim);
+  font-size: 12px;
+  text-align: center;
+  letter-spacing: 0.06em;
+}
+
+.footer-note a { color: var(--cyan); }
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 720px) {
+  .wrap { padding-top: 88px; }
+  .hero { padding: 22px 18px; }
+  .back-home { top: 12px; left: 12px; }
+}

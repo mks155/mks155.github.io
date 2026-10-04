@@ -6,10 +6,8 @@
   <meta name="description" content="mks155 的个人主页：项目展示、GitHub Pages 作品集，以及可在线游玩的 3D 赛博贪吃蛇。" />
   <title>mks155 · Home</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0f1c'/><circle cx='16' cy='16' r='7' fill='%2300f0ff'/></svg>" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/fonts.css" />
+  <link rel="stylesheet" href="css/home.css?v=10" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -24,6 +22,7 @@
     <nav class="nav">
       <a href="#projects">项目</a>
       <a href="#about">关于</a>
+      <a class="nav-cta" href="https://github.com/mks155" target="_blank" rel="noopener">GitHub</a>
     </nav>
   </header>
 
@@ -35,9 +34,10 @@
         个人作品站。代码、实验，以及可直接打开玩的小游戏都放在这里。
       </p>
       <div class="hero-actions">
-        <a class="btn primary" href="/games/cyber-snake/index.html">游玩赛博贪吃蛇</a>
-        <a class="btn ghost" href="/games/snake-llm-bench/index.html">本地模型写贪吃蛇</a>
+        <a class="btn primary" href="/projects/cyber-snake/index.html">游玩赛博贪吃蛇</a>
+        <a class="btn ghost" href="/projects/snake-llm-bench/index.html">本地模型写贪吃蛇</a>
         <a class="btn ghost" href="#projects">浏览项目</a>
+        <a class="btn ghost" href="https://github.com/mks155" target="_blank" rel="noopener">GitHub 主页</a>
       </div>
     </section>
 
@@ -47,7 +47,7 @@
       </div>
 
       <div class="cards">
-        <a class="card featured" href="/games/cyber-snake/index.html">
+        <a class="card featured" href="/projects/cyber-snake/index.html">
           <div class="card-badge">LIVE</div>
           <div class="card-art snake-art" aria-hidden="true">
             <span class="orb"></span>
@@ -59,11 +59,12 @@
             <div class="card-cat">游戏</div>
             <h3>Cyber Snake 3D</h3>
             <p>赛博城市街道里的 3D 贪吃蛇。三种难度、霓虹天际线、流畅跟拍镜头。</p>
+            <div class="tag-row"><span class="tag">3D</span><span class="tag">霓虹</span><span class="tag">三种难度</span></div>
             <span class="card-link">打开游戏 →</span>
           </div>
         </a>
 
-        <a class="card" href="/games/snake-llm-bench/index.html">
+        <a class="card" href="/projects/snake-llm-bench/index.html">
           <div class="card-badge">LIVE</div>
           <div class="card-art" aria-hidden="true" style="background:radial-gradient(ellipse at 30% 30%,rgba(0,240,255,.18),transparent 55%),linear-gradient(145deg,#0d1528,#0a0f1c);display:flex;align-items:center;justify-content:center">
             <span style="font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:.18em;color:#00f0ff;border:1px solid rgba(0,240,255,.45);padding:8px 12px;border-radius:999px;background:rgba(0,240,255,.06)">LLM × HTML</span>
@@ -72,42 +73,26 @@
             <div class="card-cat">实验</div>
             <h3>Snake LLM Bench</h3>
             <p>本地部署大模型一把出 HTML 写贪吃蛇：卡片墙试玩、量化对比、持续收录新产物。</p>
+            <div class="tag-row"><span class="tag">本地大模型</span><span class="tag">一键出 HTML</span><span class="tag">跑分对比</span></div>
             <span class="card-link">打开展示墙 →</span>
           </div>
         </a>
 
-        <a class="card" href="https://github.com/mks155/HuyaLiveOptimizer" target="_blank" rel="noopener">
-          <div class="card-badge github">GITHUB</div>
-          <div class="card-art huya-art" aria-hidden="true">
-            <span class="code-block">optimize()</span>
+        <a class="card" href="/projects/userscripts/index.html">
+          <div class="card-badge">油猴</div>
+          <div class="card-art" aria-hidden="true" style="background:radial-gradient(ellipse at 30% 30%,rgba(47,111,237,.22),transparent 55%),linear-gradient(145deg,#0d1528,#0a0f1c);display:flex;align-items:center;justify-content:center">
+            <span style="font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:.1em;color:#7ea6ff;border:1px solid rgba(126,166,255,.45);padding:8px 12px;border-radius:999px;background:rgba(47,111,237,.08)">Userscripts</span>
           </div>
           <div class="card-body">
             <div class="card-cat">工具</div>
-            <h3>HuyaLiveOptimizer</h3>
-            <p>虎牙直播相关优化工具。查看源码、说明与使用方式。</p>
-            <span class="card-link">在 GitHub 打开 →</span>
+            <h3>Userscripts</h3>
+            <p>自用浏览器脚本合集，装个脚本管理器即可使用。各脚本均开源在 GitHub。</p>
+            <div class="tag-row"><span class="tag">油猴</span><span class="tag">开源</span><span class="tag">持续增加</span></div>
+            <span class="card-link">打开合集 →</span>
           </div>
         </a>
       </div>
 
-      <ul class="link-list">
-        <li>
-          <a href="/games/cyber-snake/index.html">Cyber Snake 3D（游戏页面）</a>
-          <code>/games/cyber-snake/index.html</code>
-        </li>
-        <li>
-          <a href="/games/snake-llm-bench/index.html">Snake LLM Bench（本地模型写蛇展示墙）</a>
-          <code>/games/snake-llm-bench/index.html</code>
-        </li>
-        <li>
-          <a href="https://github.com/mks155/HuyaLiveOptimizer" target="_blank" rel="noopener">HuyaLiveOptimizer</a>
-          <code>github.com/mks155/HuyaLiveOptimizer</code>
-        </li>
-        <li>
-          <a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">本站源码</a>
-          <code>github.com/mks155/mks155.github.io</code>
-        </li>
-      </ul>
     </section>
 
     <section id="about" class="section about">
@@ -116,19 +101,13 @@
       </div>
       <p class="about-text">
         这是 <strong>mks155</strong> 的个人主页，用 <strong>GitHub Pages</strong> 托管。
-        游戏与工具按分类展示，点开即可使用或查看源码。
+        小游戏直接点开就能玩，油猴脚本装个脚本管理器即可使用，源码都在 GitHub 上。
       </p>
-      <ul class="meta-list">
-        <li><span>托管</span> GitHub Pages</li>
-        <li><span>技术</span> HTML · CSS · Three.js</li>
-        <li><span>源码</span> <a href="https://github.com/mks155/mks155.github.io" target="_blank" rel="noopener">mks155/mks155.github.io</a></li>
-      </ul>
     </section>
   </main>
 
   <footer class="site-footer">
-    <span>© <span id="year"></span> mks155</span>
-    <a href="https://github.com/mks155" target="_blank" rel="noopener">GitHub</a>
+    <span>© <span id="year"></span> <a class="footer-link" href="https://github.com/mks155" target="_blank" rel="noopener">mks155</a></span>
   </footer>
 
   <script>

@@ -1,0 +1,250 @@
+/* Userscripts · 油猴脚本合集 —— 页面专属样式
+ * 共用骨架（令牌 / 背景 / 返回主页 / 容器 / Hero 面板 / 药丸 / 提示条 / 工具栏 /
+ * 按钮 / 卡片墙 / 空态 / 页脚）已提炼到 ../../../css/shell.css。
+ * 本文件只保留脚本卡片与商店按钮相关的部分。
+ */
+
+/* ---------- 卡片 ---------- */
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 18px 0;
+}
+/* 图标统一做成一块「样片」：描边 + 适度提亮底。
+   两张脚本图标风格相反 —— DownloadRouter 是亮底、HuyaLiveOptimizer 自带
+   #12121A 深色底，而卡片底色正好是 rgb(12,18,34)（实测两者对比度仅 1.03，
+   等于没有边界）。加框后两种图标轮廓一致，46px 下都能认出形状。
+
+   描边是主力：实测该图标自带底板覆盖了 96% 面积，底色提亮几乎被挡住，
+   真正把图标「框出来」的是这圈 1px 青色边。底色保留是为了让带透明留白的
+   图标（如 DownloadRouter 的圆角）也有可依附的底。 */
+.card-icon {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  display: block;
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+}
+/* 无独立图标的脚本用字形占位，尺寸与真实图标对齐；
+   只换底色为蓝调标出「这是占位」，边框沿用上面统一的样式 */
+.card-icon.is-glyph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: #7ea6ff;
+  border-color: rgba(126, 166, 255, 0.32);
+  background: rgba(47, 111, 237, 0.1);
+}
+.card-headtext { min-width: 0; flex: 1; }
+
+/* 卡片右上角的 GitHub 图标按钮 */
+.card-gh {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  background: rgba(0, 240, 255, 0.05);
+  color: var(--dim);
+  text-decoration: none;
+  transition: 0.15s ease;
+}
+.card-gh svg { width: 14px; height: 14px; display: block; }
+.card-gh:hover {
+  color: var(--cyan);
+  border-color: var(--cyan);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.16);
+}
+
+/* 页面右上角 GitHub 入口（官方图标，小尺寸） */
+.gh-corner {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9px;
+  background: rgba(7, 11, 20, 0.75);
+  backdrop-filter: blur(8px);
+  color: var(--dim);
+  text-decoration: none;
+  transition: 0.15s ease;
+}
+.gh-corner svg { width: 16px; height: 16px; display: block; }
+.gh-corner:hover {
+  color: var(--cyan);
+  border-color: var(--border);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
+}
+
+/* 提示条里的脚本管理器官网链接 */
+.controls-tip .mgr {
+  display: inline-block;
+  margin: 0 4px;
+  color: var(--cyan);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+}
+.controls-tip .mgr:hover {
+  border-bottom-color: var(--cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.35);
+}
+.card-cat {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--dim);
+  margin-bottom: 5px;
+}
+.card h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  word-break: break-word;
+}
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--dim);
+}
+.card-body { padding: 12px 18px 0; display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.card-body p {
+  margin: 0 0 12px;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.75;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 13px; }
+.tag {
+  font-size: 11px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+/* ---------- 商店按钮 ---------- */
+.store-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding: 0 18px 18px;
+}
+.store-btn {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 6px 13px;
+  transition: 0.15s ease;
+}
+.store-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(0, 240, 255, 0.08);
+  box-shadow: 0 0 14px rgba(0, 240, 255, 0.16);
+}
+/* 首选渠道（脚本猫）用纯青底 + 外发光，与主页「游玩赛博贪吃蛇」主按钮一致 */
+.store-btn.is-primary {
+  color: #041018;
+  background: var(--cyan);
+  border-color: transparent;
+  font-weight: 700;
+  box-shadow: 0 0 22px rgba(0, 240, 255, 0.35);
+}
+.store-btn.is-primary:hover {
+  color: #041018;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
+  transform: translateY(-1px);
+}
+.store-btn.is-ghost {
+  background: transparent;
+  color: var(--dim);
+}
+.store-btn.is-ghost:hover { color: var(--cyan); }
+
+/* ---------- 列表模式 ---------- */
+/* 列表模式：整页单列（shell.css 的 .cards 是多列，这里覆盖） */
+.cards.list-mode {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.cards.list-mode .card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  grid-template-areas: "head stores" "body stores";
+  grid-template-rows: auto 1fr;
+  align-items: start;
+  column-gap: 18px;
+  padding: 14px 18px;
+}
+.cards.list-mode .card:hover { transform: none; }
+.cards.list-mode .card-head { grid-area: head; padding: 0; }
+.cards.list-mode .card-body { grid-area: body; padding: 10px 0 0; min-width: 0; }
+/* 列表模式下商店按钮排在右侧一列，文字区不再被图标挤窄 */
+.cards.list-mode .store-row {
+  grid-area: stores;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  justify-self: end;
+  align-self: start;
+  min-width: 118px;
+}
+/* 卡片墙宽 300px 一列时，max-content 列容不下按钮会回绕，这里允许换行也不至于溢出 */
+.cards.list-mode .store-row { max-width: 100%; }
+.cards.list-mode .store-btn { text-align: center; }
+.cards.list-mode .card-body p {
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.cards.list-mode .tag-row { margin-bottom: 0; }
+.cards.list-mode .card-body { padding-bottom: 0; }
+@media (max-width: 720px) {
+  .cards.list-mode .card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "head" "body" "stores";
+  }
+  .cards.list-mode .store-row {
+    margin-top: 12px;
+    padding-bottom: 0;
+    flex-direction: row;
+    justify-self: stretch;
+    min-width: 0;
+  }
+  .gh-corner { top: 12px; right: 12px; }
+  .wrap { padding-top: 56px; }
+}
