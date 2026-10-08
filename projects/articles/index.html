@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="mks155 的文章：OpenCode、自托管等方向的实践记录与配置指南。" />
+  <title>Articles · 文章</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0f1c'/><circle cx='16' cy='16' r='7' fill='%2300f0ff'/></svg>" />
+  <link rel="stylesheet" href="../../../css/fonts.css" />
+  <link rel="stylesheet" href="../../../css/shell.css?v=2" />
+  <link rel="stylesheet" href="css/style.css?v=1" />
+</head>
+<body>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <a class="back-home" href="/">← 主页</a>
+  <a class="gh-corner" href="https://github.com/mks155" target="_blank" rel="noopener" title="GitHub · mks155" aria-label="GitHub 个人主页">
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+    </svg>
+  </a>
+
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">文章</p>
+      <h1><span>Articles</span></h1>
+      <p>
+        踩过坑才敢写下来的东西。多半是配置指南和踩坑记录。
+      </p>
+      <div class="meta-row">
+        <span class="pill">收录：<strong id="article-count">0</strong> 篇</span>
+        <span class="pill status-live" id="last-updated" title="最近一次更新的时间">最后更新：<strong>—</strong></span>
+      </div>
+    </header>
+
+    <!-- 列表态 -->
+    <section id="articles-list" aria-label="文章列表">
+      <div class="toolbar">
+        <h2>POSTS <em>LIST</em></h2>
+      </div>
+      <div class="art-list" id="art-cards"></div>
+    </section>
+
+    <!-- 阅读态 -->
+    <section id="reader" hidden aria-label="文章正文">
+      <div class="reader-bar">
+        <button class="ghost-btn" type="button" data-back>← 返回列表</button>
+        <div class="reader-head">
+          <h2 id="reader-title"></h2>
+          <div class="reader-meta">
+            <span id="reader-meta"></span>
+            <span class="tag-row" id="reader-tags"></span>
+          </div>
+        </div>
+      </div>
+      <article class="md-body" id="reader-body"></article>
+    </section>
+  </div>
+
+  <p class="footer-note">
+    文章以仓库内的 .md 原文为准
+  </p>
+
+  <script src="js/markdown.js?v=1"></script>
+  <script src="js/data.js?v=1"></script>
+  <script src="js/app.js?v=1"></script>
+</body>
+</html>

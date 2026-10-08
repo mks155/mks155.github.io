@@ -85,6 +85,42 @@ body.player-mode .bg-grid { display: none; }
   box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
 }
 
+/* ---------- 右上角 GitHub 入口 ---------- */
+/* 内联 SVG 没有 CSS 尺寸约束时会撑到容器 100% 宽（这里会变成近千像素的巨图），
+   所以 .gh-corner 与里面的 svg 都必须显式给尺寸。放在 shell.css 里，
+   新页面只要引了 shell.css 就自动有，不用每个页面各写一遍。 */
+.gh-corner {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-soft);
+  border-radius: 9px;
+  background: rgba(7, 11, 20, 0.75);
+  backdrop-filter: blur(8px);
+  color: var(--dim);
+  text-decoration: none;
+  transition: 0.15s ease;
+}
+
+.gh-corner svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+.gh-corner:hover {
+  color: var(--cyan);
+  border-color: var(--border);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
+}
+
 /* ---------- 容器 ---------- */
 .wrap {
   width: min(var(--max), calc(100% - 32px));
@@ -403,4 +439,5 @@ body.player-mode .bg-grid { display: none; }
   .wrap { padding-top: 88px; }
   .hero { padding: 22px 18px; }
   .back-home { top: 12px; left: 12px; }
+  .gh-corner { top: 12px; right: 12px; }
 }

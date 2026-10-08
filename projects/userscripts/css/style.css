@@ -66,32 +66,7 @@
   box-shadow: 0 0 14px rgba(0, 240, 255, 0.16);
 }
 
-/* 页面右上角 GitHub 入口（官方图标，小尺寸） */
-.gh-corner {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  z-index: 50;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--border-soft);
-  border-radius: 9px;
-  background: rgba(7, 11, 20, 0.75);
-  backdrop-filter: blur(8px);
-  color: var(--dim);
-  text-decoration: none;
-  transition: 0.15s ease;
-}
-.gh-corner svg { width: 16px; height: 16px; display: block; }
-.gh-corner:hover {
-  color: var(--cyan);
-  border-color: var(--border);
-  background: rgba(0, 240, 255, 0.1);
-  box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
-}
+/* .gh-corner 已提到 ../../../css/shell.css，这里不再重复定义 */
 
 /* 提示条里的脚本管理器官网链接 */
 .controls-tip .mgr {
@@ -245,6 +220,5 @@
     justify-self: stretch;
     min-width: 0;
   }
-  .gh-corner { top: 12px; right: 12px; }
   .wrap { padding-top: 56px; }
 }

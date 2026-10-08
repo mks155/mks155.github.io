@@ -1,0 +1,365 @@
+/* ============================================================
+ * Articles · 文章模块专属样式
+ * ------------------------------------------------------------
+ * 外壳（令牌 / 背景网格 / 返回 / hero / 药丸 / 工具栏 / 页脚）
+ * 来自 ../../../css/shell.css，这里只管：
+ *   文章列表卡片 / 阅读态工具条 / markdown 正文排版
+ * ============================================================ */
+
+/* ---------- 列表卡片 ---------- */
+.art-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.art-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 20px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  background: var(--panel);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.art-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 240, 255, 0.08);
+}
+
+.art-card-body { min-width: 0; flex: 1; }
+
+.art-card h3 {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.art-card:hover h3 { color: var(--cyan); }
+
+.art-card p {
+  margin-top: 8px;
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.art-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 12px;
+}
+
+.art-date {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+}
+
+.art-open {
+  flex: 0 0 auto;
+  align-self: center;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--cyan);
+  white-space: nowrap;
+}
+
+.tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.art-card .tag-row { flex-wrap: nowrap; }
+
+.tag {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 166, 255, 0.32);
+  background: rgba(47, 111, 237, 0.1);
+  color: #9dc0ff;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* ---------- 阅读态 ---------- */
+.reader-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 12px 16px;
+  margin: 4px 0 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.reader-bar .ghost-btn { flex: 0 0 auto; }
+
+.reader-head { flex: 1 1 320px; min-width: 0; }
+
+.reader-head h2 {
+  font-family: var(--display);
+  font-size: clamp(17px, 3vw, 22px);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.35;
+  color: var(--cyan);
+  word-break: break-word;
+}
+
+.reader-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+}
+
+.reader-loading,
+.reader-error {
+  color: var(--dim);
+  font-size: 13px;
+  padding: 18px 0;
+}
+
+.reader-error { color: var(--danger); }
+
+/* ============================================================
+ * markdown 正文排版
+ * ============================================================ */
+.md-body {
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.85;
+  word-break: break-word;
+}
+
+/* 正文里中文为主，字距比正文稍宽一点更好读 */
+.md-body > :first-child { margin-top: 0; }
+
+.md-body h1,
+.md-body h2,
+.md-body h3,
+.md-body h4 {
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  color: var(--text);
+  margin: 34px 0 12px;
+  scroll-margin-top: 90px;
+}
+
+.md-body h1 {
+  font-size: clamp(20px, 3.4vw, 27px);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.md-body h2 {
+  font-size: clamp(17px, 2.6vw, 21px);
+  color: var(--cyan);
+}
+
+.md-body h3 {
+  font-size: clamp(15px, 2.2vw, 17px);
+  color: #b8e8f4;
+}
+
+.md-body h4 {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.md-body p { margin: 14px 0; }
+
+.md-body a {
+  color: var(--cyan);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.32);
+}
+
+.md-body a:hover {
+  border-bottom-color: var(--cyan);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+.md-body strong { color: #eafaff; font-weight: 700; }
+
+.md-body em { color: #b9dcea; font-style: italic; }
+
+.md-body hr {
+  border: 0;
+  border-top: 1px solid var(--border-soft);
+  margin: 30px 0;
+}
+
+/* ---------- 列表 ---------- */
+.md-list {
+  margin: 14px 0;
+  padding-left: 24px;
+}
+
+.md-list li {
+  margin: 7px 0;
+  padding-left: 4px;
+}
+
+.md-list li::marker { color: var(--cyan); }
+
+/* ---------- 引用块 ---------- */
+.md-quote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 3px solid var(--cyan);
+  border-radius: 0 10px 10px 0;
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.md-quote > :first-child { margin-top: 0; }
+.md-quote > :last-child { margin-bottom: 0; }
+.md-quote p { margin: 8px 0; color: #b6d8e6; }
+
+/* ---------- 行内代码 ---------- */
+.md-body code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 201, 77, 0.22);
+  background: rgba(255, 201, 77, 0.08);
+  color: var(--warn);
+  word-break: break-word;
+}
+
+/* ---------- 代码块 ---------- */
+.md-code {
+  position: relative;
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  background: rgba(6, 10, 20, 0.92);
+  overflow-x: auto;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.7;
+  tab-size: 2;
+}
+
+/* 代码块内的 code 不再套行内代码的黄色框 */
+.md-code code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #cfe8f4;
+  font-size: inherit;
+  white-space: pre;
+  word-break: normal;
+}
+
+/* 语言标签贴在代码块右上角 */
+.md-code[data-lang]::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 240, 255, 0.24);
+  background: rgba(0, 240, 255, 0.08);
+  color: var(--cyan);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* 右上角有语言标签，代码首行留出空间 */
+.md-code[data-lang] { padding-top: 30px; }
+
+/* ---------- 表格 ---------- */
+.md-table-wrap {
+  margin: 16px 0;
+  overflow-x: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+}
+
+.md-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.md-table th,
+.md-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-soft);
+  border-right: 1px solid var(--border-soft);
+  text-align: left;
+  vertical-align: top;
+}
+
+.md-table th {
+  background: rgba(0, 240, 255, 0.07);
+  color: var(--cyan);
+  font-family: var(--display);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.md-table tr:last-child td { border-bottom: 0; }
+.md-table th:last-child,
+.md-table td:last-child { border-right: 0; }
+
+.md-table tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+
+.md-table td code { font-size: 0.92em; }
+
+.md-table a { border-bottom: 0; }
+.md-table a:hover { text-decoration: underline; }
+
+/* ---------- 窄屏 ---------- */
+@media (max-width: 720px) {
+  /* 阅读态工具条：按钮独占一行，标题另起一行 */
+  .reader-bar { gap: 10px; }
+  .reader-bar .ghost-btn { width: 100%; justify-content: center; }
+  .reader-head { flex: 1 1 100%; }
+
+  .art-list { grid-template-columns: minmax(0, 1fr); }
+
+  /* 正文窄一点，代码块与表格各自横向滚动，不撑破页面 */
+  .md-body { font-size: 14px; line-height: 1.8; }
+  .md-code { font-size: 12px; padding: 12px 13px; }
+  .md-table { font-size: 12px; }
+  .md-table th,
+  .md-table td { padding: 8px 10px; }
+  .md-body h1 { margin-top: 24px; }
+  .md-body h1,
+  .md-body h2 { margin-top: 28px; }
+}
+
+/* 隐藏列表态时 footer 依旧留着，保持各页一致 */
+body.reading .footer-note { display: none; }
