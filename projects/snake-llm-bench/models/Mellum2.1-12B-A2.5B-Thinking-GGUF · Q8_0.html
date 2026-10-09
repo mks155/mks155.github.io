@@ -1,0 +1,161 @@
+<html> <head> <title>贪吃蛇游戏</title> <style> body { margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f0f0; font-family: Arial, sans-serif; } canvas { border: 2px solid #333; background-color: #000; } .game-container { text-align: center; } h1 { color: #4CAF50; } </style> </head> <body> <div class="game-container"> <h1>贪吃蛇游戏</h1> <canvas id="gameCanvas" width="400" height="400"></canvas> <p>使用方向键控制蛇</p> </div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const gridSize = 20;
+    const canvasWidth = canvas.width;
+    const canvasHeight = canvas.height;
+    
+    // 游戏状态
+    let snake = [{x: 10, y: 10}];
+    let dx = 0;
+    let dy = 0;
+    let food = {x: 15, y: 15};
+    let gameOver = false;
+    let speed = 100; // 控制速度（毫秒）
+
+    // 初始化方向（向右）
+    dx = 1;
+    dy = 0;
+
+    // 生成食物
+    function generateFood() {
+        let newFood;
+        let onSnake;
+        do {
+            onSnake = false;
+            newFood = {
+                x: Math.floor(Math.random() * (canvasWidth / gridSize)),
+                y: Math.floor(Math.random() * (canvasHeight / gridSize))
+            };
+            // 检查是否在蛇身上
+            for (let segment of snake) {
+                if (segment.x === newFood.x && segment.y === newFood.y) {
+                    onSnake = true;
+                    break;
+                }
+            }
+        } while (onSnake);
+        food = newFood;
+    }
+
+    // 绘制游戏画布
+    function draw() {
+        // 清空画布
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+        
+        // 绘制蛇
+        ctx.fillStyle = 'lime';
+        snake.forEach((segment, index) => {
+            // 头部稍微 brighter
+            if (index === 0) {
+                ctx.fillStyle = 'green';
+            } else {
+                ctx.fillStyle = 'lime';
+            }
+            ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize - 1, gridSize - 1);
+        });
+        
+        // 绘制食物
+        ctx.fillStyle = 'red';
+        ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+        
+        // 如果游戏结束
+        if (gameOver) {
+            ctx.fillStyle = 'white';
+            ctx.font = '30px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束!', canvasWidth/2, canvasHeight/2 - 20);
+            ctx.font = '20px Arial';
+            ctx.fillText('按空格键重新开始', canvasWidth/2, canvasHeight/2 + 20);
+        }
+    }
+
+    // 移动蛇
+    function move() {
+        // 创建新头部
+        const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+        
+        // 检测碰撞
+        const collided = 
+            head.x < 0 || head.x >= canvasWidth / gridSize ||
+            head.y < 0 || head.y >= canvasHeight / gridSize ||
+            snake.some(segment => segment.x === head.x && segment.y === head.y);
+        
+        if (collided) {
+            gameOver = true;
+            return;
+        }
+        
+        // 添加新头部
+        snake.unshift(head);
+        
+        // 检查是否吃到食物
+        if (head.x === food.x && head.y === food.y) {
+            // 生成新食物
+            generateFood();
+            // 增加速度（可选）
+            if (speed > 50) speed -= 5;
+        } else {
+            // 移除尾部
+            snake.pop();
+        }
+    }
+
+    // 游戏循环
+    function gameLoop() {
+        if (gameOver) return;
+        
+        move();
+        draw();
+        
+        if (!gameOver) {
+            setTimeout(gameLoop, speed);
+        }
+    }
+
+    // 键盘控制
+    document.addEventListener('keydown', (e) => {
+        if (gameOver && e.key === ' ') {
+            // 按空格键重新开始
+            location.reload();
+            return;
+        }
+        
+        if (gameOver) return;
+        
+        switch(e.key) {
+            case 'ArrowUp':
+                if (dy === 0) {
+                    dx = 0;
+                    dy = -1;
+                }
+                break;
+            case 'ArrowDown':
+                if (dy === 0) {
+                    dx = 0;
+                    dy = 1;
+                }
+                break;
+            case 'ArrowLeft':
+                if (dx === 0) {
+                    dx = -1;
+                    dy = 0;
+                }
+                break;
+            case 'ArrowRight':
+                if (dx === 0) {
+                    dx = 1;
+                    dy = 0;
+                }
+                break;
+        }
+    });
+
+    // 初始化并开始游戏
+    generateFood();
+    gameLoop();
+</script>
+</body> </html>
