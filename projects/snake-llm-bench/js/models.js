@@ -202,7 +202,7 @@ window.SNAKE_LLM_MODELS = [
     family: "Ternary-Bonsai",
     quant: "PTQ1_0",
     params: "27B",
-    backend: "Unsloth Desktop",
+    backend: "PrismML-Eng",
     tps: 42.69,
     uploadedAt: "2026-10-09",
     review: {
@@ -225,7 +225,7 @@ window.SNAKE_LLM_MODELS = [
     family: "Ternary-Bonsai",
     quant: "PQ2_0",
     params: "27B",
-    backend: "Unsloth Desktop",
+    backend: "PrismML-Eng",
     tps: 52.77,
     uploadedAt: "2026-10-09",
     review: {
@@ -271,7 +271,7 @@ window.SNAKE_LLM_MODELS = [
     family: "Qwen",
     quant: "IQ1_M",
     params: "—",
-    backend: "Unsloth Desktop",
+    backend: "Strata",
     tps: 34.3,
     uploadedAt: "2026-10-09",
     review: {
