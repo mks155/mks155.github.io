@@ -266,7 +266,7 @@ window.SNAKE_LLM_MODELS = [
   },
   {
     id: "qwen3.8-flash-next-coder-iq1_m",
-    name: "qwen3.8-flash-next-coder",
+    name: "Qwen3.8-Flash-Next-GSQ-RCO-Coder-GGUF",
     file: "models/qwen3.8-flash-next-coder-iq1_m.html",
     family: "Qwen",
     quant: "IQ1_M",
