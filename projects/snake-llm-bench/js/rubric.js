@@ -11,7 +11,7 @@
 
 window.SNAKE_LLM_RUBRIC = {
   version: "1.0",
-  updatedAt: "2026-10-03",
+  updatedAt: "2026-10-11",
   title: "SNAKE SCORE · 一把出贪吃蛇产物评分标准",
   scale: 1000,
 
@@ -333,7 +333,8 @@ window.SNAKE_LLM_RUBRIC = {
     FOOD_ON_SNAKE:     { label: "食物压身",       desc: "生成食物时不检查蛇身，食物会直接出现在蛇身上。" },
     PAUSE_KEY_DEAD:    { label: "暂停键失效",     desc: "界面提示某个按键可暂停，但该键在游戏中的分支缺失，按了没反应。" },
     DIE_ON_STEP1:     { label: "开局即死",       desc: "主循环跑起来后第一步就触发结束判定，画面从头到尾静止，玩家无法进行任何操作。" },
-    UNIT_MISMATCH:    { label: "坐标单位不一致", desc: "蛇身坐标是像素而边界判定用的是格子数，两者量纲不同，导致第一步就判定越界。" }
+    UNIT_MISMATCH:    { label: "坐标单位不一致", desc: "蛇身坐标是像素而边界判定用的是格子数，两者量纲不同，导致第一步就判定越界。" },
+    TAIL_COLLISION:   { label: "尾部误判撞死",   desc: "自撞检测遍历整条蛇、含本步即将移走的尾节，蛇贴着自己的尾巴转向会被误判为撞死。" }
   },
 
   // ==========================================================================
@@ -447,6 +448,12 @@ window.SNAKE_LLM_RUBRIC = {
       name: "前置检查会吃掉游戏的寿命",
       symptom: "Swift 自动开局且约 700ms 就自己撞墙。若先做 700ms 空闲检查再正式采样，采样时画面早已静止，会把可玩产物判成「开局即死」。",
       fix: "一加载就直接采样，不做任何前置动作。自动开局与生存测试必须合并在同一次采样里完成。"
+    },
+    {
+      name: "按键要派发到 document，不是 window",
+      symptom: "用 window.dispatchEvent(new KeyboardEvent('keydown')) 派发按键，监听器挂在 document 上的产物一律收不到，探针报出「方向键未转向 / WASD 失效」的假阴性。反过来若派发到 document，事件会向上冒泡到 window，两种监听位置都能覆盖，所以 document 是唯一安全的选择。",
+      fix: "一律 document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }))。派发前先确认产物的监听位置（源码里是 document.addEventListener 还是 window.addEventListener），两者都覆盖才不会漏。",
+      realCase: "Underdog-Saluki 两份产物用 document.addEventListener('keydown')，改派发位置后 ArrowUp/ArrowDown/w/s 逐项撞到对应方向的墙，与源码 keyMap 一致；改之前同样条件下报出 NOT-TURNED，差点误扣 ctrl 分。"
     },
     {
       name: "查不到不等于不存在（同一子项被改三次分）",

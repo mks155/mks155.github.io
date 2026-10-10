@@ -19,7 +19,7 @@ window.SNAKE_LLM_MODELS = [
     quant: "Q8_0",
     params: "9B",
     backend: "Unsloth Desktop",
-    tps: 72.8,
+    tps: 57.4,
     uploadedAt: "2026-09-22",
     review: {
       rubric: "1.0",
@@ -42,7 +42,7 @@ window.SNAKE_LLM_MODELS = [
     quant: "Q4_K_M",
     params: "9B",
     backend: "Unsloth Desktop",
-    tps: 57.4,
+    tps: 72.8,
     uploadedAt: "2026-09-22",
     review: {
       rubric: "1.0",
@@ -286,5 +286,74 @@ window.SNAKE_LLM_MODELS = [
     },
     note: "打开就在玩，方向键和 WASD 都能转，空格能暂停，吃到食物分数会加、速度也跟着变快。没有最高分记录，全程也没有声音。",
     tags: ["可玩", "加速节奏", "无滑动"]
+  },
+  {
+    id: "underdog-saluki-27b-iq2-mix-mtp",
+    name: "Underdog-Saluki-27B-1.0",
+    file: "models/Underdog-Saluki-27B-1.0-IQ2-mix-MTP.html",
+    family: "Underdog-Saluki",
+    quant: "IQ2-mix-MTP",
+    params: "27B",
+    backend: "Unsloth Desktop",
+    tps: 55.8,
+    uploadedAt: "2026-10-11",
+    review: {
+      rubric: "1.0",
+      score: 610,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面不变 => 不自动开局；[T2 实测] startBtn 实测 134x49、elementFromPoint 命中自身 => 点一次即进入；[T1b 实测] 点击后采样变化 8 次、首次 71ms、间隔均值 126ms（声明 120ms）=> 生存测试通过 => boot 200。[T3 实测·两套独立探针互证] ArrowUp/ArrowDown 派发后蛇分别撞上墙与下墙，w/s 得到完全相同的结果 => 方向键与 WASD 均生效；[N 实测] 全文未绑定 touchstart/touchmove/touchend，可达控件里没有任何方向控件（仅 score、highScore、遮罩标题、遮罩文案、startBtn）=> 无滑动、无屏幕方向键 => ctrl 35。[T4 实测] 朝右时按左仍撞右墙 => 拒绝 180 度反转；[静态判定] 自撞用 slice(0,-1) 正确排除本步移走的尾节，食物用 do-while 加 snake.some 避开蛇身 => rule 60。[T5 实测] 间隔均值 126ms 恒定，源码 SPEED_MS 为 const 且无处赋值 => 固定速度 => pace 30。[T8 实测] 吃到食物 +10 分，score 与 highScore 两元素齐备；localStorage 键 snakeHigh 只在 gameOver() 内写入 => 计分正确、最高分更新但只写到局末 => score 110。[T6 实测] 蛇身分渐变、蛇眼随方向转动、食物双色，但吃到与死亡均无任何反馈动画 => vis 85。[T7 实测] 全文无 AudioContext 与 audio 元素 => sfx 0。[T9 实测] 全程无未捕获异常；#overlay 为 absolute 且定位祖先是 DIV#gameContainer [relative]，尺寸 720x480 与画布完全一致 => 遮罩定位正确；空格实测可暂停并可恢复，「再来一局」实测重开有效 => rob 90。[T10 实测] 无 devicePixelRatio、无 resize 监听、无媒体查询，画布固定 720x480 => adp 0。开局前画布实测 0% 不透明，但遮罩背景 rgba(26,26,46,0.85) 完全覆盖画布，玩家看不到空棋盘，故不记 MENU_NO_DRAW。",
+      subs: { boot: 200, ctrl: 35, rule: 60, pace: 30, score: 110, vis: 85, sfx: 0, rob: 90, adp: 0 },
+      axes: { play: 295, feel: 140, show: 85, done: 90 },
+      defects: ["NO_ACCEL", "NO_SWIPE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "要先点开始，方向键和 WASD 都能转，蛇身有渐变、眼睛会跟着方向转，最高分也记着。手机上没方向按钮也滑不动，全程听不到声音。",
+    tags: ["可玩", "MTP", "无滑动"]
+  },
+  {
+    id: "qwen3.8-9b-distill-q8_0",
+    name: "Qwen3.8-9B-Distill",
+    file: "models/Qwen3.8-9B-Distill-GGUF · Q8_0.html",
+    family: "Qwen",
+    quant: "Q8_0",
+    params: "9B",
+    backend: "Unsloth Desktop",
+    tps: 68.4,
+    uploadedAt: "2026-10-11",
+    review: {
+      rubric: "1.0",
+      score: 630,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 页面加载只执行 initGame() 与 draw()，无输入画面不变 => 不自动开局；[T2 实测] btn-start「开始游戏」过 elementFromPoint 命中测试 => 点一次即进入；[T1b 实测] 点击后变化 5 次、首次 112ms、间隔均值 148ms（声明 150ms）=> 生存测试通过 => boot 200。[T3 实测·三路互证] 键盘 ArrowUp/ArrowDown/w/s 逐项撞到对应方向的墙；在 400px 窄视口下 .mobile-controls 实测为 flex，四个 .d-btn 各 52x50 且 elementFromPoint 命中自身，依次点击后 上/下/右 分别撞上墙、下墙、右墙，左 仍撞右墙（180 度反转被正确拒绝）；模拟 touchstart+touchmove+touchend 上滑后蛇撞上墙 => 键盘、屏幕方向键、滑动三路全通 => ctrl 90。该 dpad 受 @media(min-width:769px) 控制，1280px 下测不到属正常响应式行为，不是缺陷。[T4 实测] 拒绝 180 度反转；[静态判定] 自撞检测遍历整条蛇、含本步即将移走的尾节，蛇贴着自己尾巴转向会被误判撞死 => 错一项 => rule 45；食物生成避开蛇身，撞墙判死正常。[T5 实测] 间隔均值 148ms；[静态判定] 吃到时 gameSpeed 被重算为 Math.max(50, 150-floor(score/50)*10)，但 setInterval(update, gameSpeed) 只在 startGame() 内创建一次，加速是死代码、从未生效 => 固定速度 => pace 30。[T8 实测] 吃到 +10 分，score、highScore、finalScore 三元素齐备；localStorage 键 snakeHighScore 只在 gameOver() 内写入 => 计分正确、最高分更新但只写到局末 => score 110。[T6 实测] 每节径向渐变、蛇头与食物带 shadowBlur 发光、蛇眼随方向转动、尾部透明度渐变、30% 半透明填充留下拖尾，但吃到与死亡均无反馈动画 => vis 85。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常；.game-over-overlay 是 position:fixed 全屏模态且开局时 visibility:hidden，属设计而非错位；「再玩一次」实测重开有效，但产物没有任何暂停功能 => 暂停/重开缺一项，另有加速死代码 => rob 45。[T10 实测] 两条媒体查询在 768px 以下把画布缩到 300x300，但无 DPR、无 resize 监听、backing 恒为 400x400 => 仅 CSS 缩放 => adp 25。",
+      subs: { boot: 200, ctrl: 90, rule: 45, pace: 30, score: 110, vis: 85, sfx: 0, rob: 45, adp: 25 },
+      axes: { play: 335, feel: 140, show: 85, done: 70 },
+      defects: ["NO_ACCEL", "TAIL_COLLISION", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "要先点开始，方向键、WASD、屏幕方向键和滑动都能用，手机上也有方向按钮。速度一直不变，越吃也不会变快，全程没有声音。",
+    tags: ["可玩", "触屏完整", "无加速"]
+  },
+  {
+    id: "underdog-saluki-27b-iq2-mix",
+    name: "Underdog-Saluki-27B-1.0",
+    file: "models/Underdog-Saluki-27B-1.0-IQ2-mix.html",
+    family: "Underdog-Saluki",
+    quant: "IQ2-mix",
+    params: "27B",
+    backend: "Unsloth Desktop",
+    tps: 37.6,
+    uploadedAt: "2026-10-11",
+    review: {
+      rubric: "1.0",
+      score: 640,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面不变 => 不自动开局；[T2 实测] startBtn 134x49 过命中测试 => 点一次即进入；[T1b 实测] 点击后画面持续变化并数秒后撞右墙结束、首次变化小于 150ms => 生存测试通过 => boot 200。[T3 实测·两套独立探针互证] ArrowUp/ArrowDown 与 w/s 两组派发后分别撞上墙、下墙，逐项结果一致 => 方向键与 WASD 均生效；[N 实测] 未绑定任何 touch 事件，可达控件中没有任何方向控件（只有 score、length、highScore、三个难度按钮、finalScore、restartBtn）=> ctrl 35。[T4 实测] 朝右时按左仍撞右墙 => 拒绝 180 度反转；[静态判定] 自撞用 slice(0,-1) 排除尾节，食物用 do-while 避开蛇身 => rule 60。[T5 实测] 三档难度逐档实测步长 126 / 82 / 55ms，与源码 SPEEDS {easy:120, normal:80, hard:50} 一致；局内不加速 => pace 105。[T8 实测] 吃到 +10 分并同步长度，highScore 与结算分齐备，localStorage 键 snakeHigh 只在 gameOver() 内写入 => score 110。[T6 实测] 蛇身沿长度渐变、蛇头带发光、食物双色、暂停文字直接画在画布上，但吃到与死亡均无反馈动画 => vis 85。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 五条交互路径（开局、转向、暂停、恢复、重开）实测均不抛错，p 键暂停与恢复实测有效，restartBtn 134x49 实测可重开；startOverlay 与 endOverlay 的定位祖先均为 DIV [relative] 且尺寸与画布一致 => 遮罩定位正确。但加载期末尾那次 draw() 抛未捕获 TypeError：food 与 snake 只声明未初始化，draw() 读到 food.x 即中断 —— 实测加载帧 100% 不透明却只有底色（食物 0 像素、蛇 0 像素），点开始后食物 188 像素、蛇 799 像素 => 非致命问题 => rob 45。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 600x600 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 60, pace: 105, score: 110, vis: 85, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 295, feel: 215, show: 85, done: 45 },
+      defects: ["MENU_NO_DRAW", "NO_ACCEL", "NO_SWIPE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "难度有三档可以选，速度一局里不变。方向键和 WASD 都能转，按 P 能暂停，最高分也记着。手机上只能按键盘，滑不动，也听不到声音。",
+    tags: ["可玩", "难度切换", "无滑动"]
   }
 ];
