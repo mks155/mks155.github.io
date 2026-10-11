@@ -189,16 +189,9 @@
   min-width: 260px;
 }
 
-/* 列表模式正文宽：标签与「试玩」并排一行，右边不再空一大块 */
+/* 列表模式正文够宽，属性条排一行铺满整条 */
 .cards.list-mode .stat-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.cards.list-mode .card-foot {
-  margin-top: 0;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .sr-only {
@@ -561,6 +554,10 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
+  /* 标签与值都在格子内居中：四格等宽，居中后长短不一的值（如
+     27B / IQ2-mix / Unsloth Desktop / 37.6 tok/s）视觉重心一致 */
+  align-items: center;
+  text-align: center;
   gap: 2px;
 }
 
@@ -586,43 +583,20 @@
   line-height: 1.35;
   color: #e6f2f8;
   letter-spacing: 0.02em;
-  text-align: left;
+  text-align: center;
   overflow-wrap: anywhere;
   text-synthesis: none;
   -webkit-font-smoothing: antialiased;
 }
 
-/* 标签行与「试玩」：卡片墙里标签必须独占整宽 —— 四个标签加上按钮宽度就超了，
-   并排会把标签裁掉十几到几十像素；列表模式正文够宽，才并排成一行。 */
-.card-foot {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-top: 2px;
-}
-
-.cards:not(.list-mode) .card-foot {
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.cards:not(.list-mode) .card-foot .meta-row {
-  align-self: stretch;
-  width: 100%;
-}
-
-.card-foot .meta-row {
-  flex: 1 1 auto;
-  min-width: 0;
-  margin-top: 0;
-}
-
-/* 没有标签时留一个占位，把按钮顶到右边 */
-.foot-gap {
-  flex: 1 1 auto;
+/* 「试玩」在两种模式里都待在右上角，DOM 位置只有一处（.card-head 内、下载按钮之后），
+   落点由 CSS 决定：
+   - 卡片模式：脱离常规流，浮到预览图右上角（与左上角的量化徽章对称）
+   - 列表模式：回到常规流，排在下载按钮右侧 —— 下载按钮因此自动左移让位 */
+.cards .card {
+  /* 绝对定位的参照物。shell.css 的 .card 没设 position，
+     这里补上；列表模式会覆盖 .card 的 display 为 grid，但 position 不受影响。 */
+  position: relative;
 }
 
 .card-actions {
@@ -639,7 +613,25 @@
 
 .card-actions .primary-btn {
   min-width: 0;
-  padding: 8px 30px;
+  padding: 8px 20px;
+}
+
+/* 卡片模式：浮在预览图右上角。z-index 要高过 .card-preview::after 的压暗层(1) */
+.cards:not(.list-mode) .card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+}
+
+/* 列表模式：回到常规流，紧跟下载按钮（排在它右边） */
+.cards.list-mode .card-actions {
+  position: static;
+  margin-left: 2px;
+}
+
+.cards.list-mode .card-actions .primary-btn {
+  padding: 7px 16px;
 }
 
 /* Focus / player — near-fullscreen overlay */

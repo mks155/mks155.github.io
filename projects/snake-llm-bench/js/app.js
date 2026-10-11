@@ -242,6 +242,9 @@
           <path d="M6 19h12" />
         </svg>
       </a>
+      <div class="card-actions">
+        <button class="primary-btn" type="button" data-action="play">试玩</button>
+      </div>
     </div>
     <div class="stat-grid">
       <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
@@ -251,12 +254,7 @@
     </div>
     ${renderBench(m)}
     <p>${escapeHtml(m.note || "")}</p>
-    <div class="card-foot">
-      ${tags ? `<div class="meta-row">${tags}</div>` : '<span class="foot-gap"></span>'}
-      <div class="card-actions">
-        <button class="primary-btn" type="button" data-action="play">试玩</button>
-      </div>
-    </div>
+    ${tags ? `<div class="meta-row">${tags}</div>` : ""}
   </div>
 </article>`;
       })
