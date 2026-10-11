@@ -31,9 +31,12 @@
     }
   };
 
+  // 默认：上传时间降序（最新的排在最前）。
   let sortKey = "time";
-  let sortDesc = false;
+  let sortDesc = true;
   let viewState = "grid";
+  // 进入专注试玩前的视图，退出时回到这里而不是硬编码回卡片墙
+  let viewBeforePlayer = "grid";
   let currentId = null;
 
   function ordered() {
@@ -48,35 +51,43 @@
       .map((x) => x.m);
   }
 
+  // 工具栏控件布局换过一版（排序维度从按钮组改成下拉、视图切换并成单按钮），
+  // 旧版存档里的字段名已对不上，这里按版本号整体作废，避免读到半新半旧的状态。
+  const PREFS_KEY = "snake_bench_prefs";
+  const PREFS_VERSION = 2;
+
   function loadPrefs() {
     try {
       const raw = localStorage.getItem(PREFS_KEY);
       if (!raw) return;
       const p = JSON.parse(raw);
+      if (p.v !== PREFS_VERSION) return;
       if (p.sortKey && SORTS[p.sortKey]) sortKey = p.sortKey;
       if (typeof p.sortDesc === "boolean") sortDesc = p.sortDesc;
       if (["grid", "list", "player"].indexOf(p.view) >= 0) viewState = p.view;
+      if (["grid", "list"].indexOf(p.viewBefore) >= 0) viewBeforePlayer = p.viewBefore;
     } catch (e) { /* 忽略 */ }
   }
 
   function savePrefs() {
     try {
       localStorage.setItem(PREFS_KEY, JSON.stringify({
-        sortKey: sortKey, sortDesc: sortDesc, view: viewState
+        v: PREFS_VERSION,
+        sortKey: sortKey, sortDesc: sortDesc,
+        view: viewState, viewBefore: viewBeforePlayer
       }));
     } catch (e) { /* 忽略 */ }
   }
 
   function syncSortUI() {
-    document.querySelectorAll("[data-sort]").forEach((b) => {
-      b.classList.toggle("active", b.getAttribute("data-sort") === sortKey);
-    });
+    if (sortSelect) sortSelect.value = sortKey;
     if (sortDirBtn) {
       sortDirBtn.textContent = sortDesc ? "↓ 降序" : "↑ 升序";
       sortDirBtn.classList.toggle("desc", sortDesc);
       sortDirBtn.title = sortDesc
         ? "当前降序，点击切换为升序"
         : "当前升序，点击切换为降序";
+      sortDirBtn.setAttribute("aria-label", sortDirBtn.title);
     }
   }
   const cardsEl = document.getElementById("cards");
@@ -88,15 +99,14 @@
   const downloadLink = document.getElementById("player-download");
   const reloadBtn = document.getElementById("player-reload");
   const backBtn = document.getElementById("player-back");
-  const tabGrid = document.getElementById("tab-grid");
-  const tabList = document.getElementById("tab-list");
-  const tabPlayer = document.getElementById("tab-player");
+  const sortSelect = document.getElementById("sort-key");
   const sortDirBtn = document.getElementById("sort-dir");
+  const viewToggle = document.getElementById("view-toggle");
+  const focusPlayBtn = document.getElementById("focus-play");
   const playerSelect = document.getElementById("player-select");
   const playerSwitch = document.getElementById("player-switch");
   const playerPrev = document.getElementById("player-prev");
   const playerNext = document.getElementById("player-next");
-  const PREFS_KEY = "snake_bench_prefs";
   const footerNote = document.querySelector(".footer-note");
   const wrapEl = document.querySelector(".wrap");
   const backHome = document.querySelector(".back-home");
@@ -214,16 +224,10 @@
   </div>
   <div class="card-body">
     <div class="card-head">
-      <div>
+      <div class="card-id">
         <div class="card-cat">${escapeHtml(m.family || "LOCAL LLM")}</div>
         <h3>${escapeHtml(m.name)}${m.quant ? " · " + escapeHtml(m.quant) : ""}</h3>
         ${uploadMeta}
-        <div class="stat-grid">
-          <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
-          <div class="stat"><span>量化</span><b>${escapeHtml(m.quant || "—")}</b></div>
-          <div class="stat"><span>平台</span><b>${escapeHtml(m.backend || "local")}</b></div>
-          <div class="stat"><span>速度</span><b>${escapeHtml(formatTps(m.tps))}</b></div>
-        </div>
       </div>
       <a
         class="download-btn"
@@ -239,11 +243,19 @@
         </svg>
       </a>
     </div>
+    <div class="stat-grid">
+      <div class="stat"><span>参数</span><b>${escapeHtml(m.params || "—")}</b></div>
+      <div class="stat"><span>量化</span><b>${escapeHtml(m.quant || "—")}</b></div>
+      <div class="stat"><span>平台</span><b>${escapeHtml(m.backend || "local")}</b></div>
+      <div class="stat"><span>速度</span><b>${escapeHtml(formatTps(m.tps))}</b></div>
+    </div>
     ${renderBench(m)}
     <p>${escapeHtml(m.note || "")}</p>
-    ${tags ? `<div class="meta-row">${tags}</div>` : ""}
-    <div class="card-actions">
-      <button class="primary-btn" type="button" data-action="play">试玩</button>
+    <div class="card-foot">
+      ${tags ? `<div class="meta-row">${tags}</div>` : '<span class="foot-gap"></span>'}
+      <div class="card-actions">
+        <button class="primary-btn" type="button" data-action="play">试玩</button>
+      </div>
     </div>
   </div>
 </article>`;
@@ -264,7 +276,11 @@
   function setView(view) {
     const isPlayer = view === "player";
     const isList = view === "list";
-    const isGrid = view === "grid";
+
+    // 进入试玩前记下当前视图，退出时回到它
+    if (isPlayer && !document.body.classList.contains("player-mode")) {
+      viewBeforePlayer = viewState === "player" ? viewBeforePlayer : viewState;
+    }
 
     viewState = view;
 
@@ -281,10 +297,19 @@
     if (wrapEl) wrapEl.hidden = isPlayer;
     if (footerNote) footerNote.hidden = isPlayer;
     if (backHome) backHome.hidden = isPlayer;
-    if (tabGrid) tabGrid.classList.toggle("active", isGrid);
-    if (tabList) tabList.classList.toggle("active", isList);
-    if (tabPlayer) tabPlayer.classList.toggle("active", isPlayer);
-    if (backBtn) backBtn.textContent = isList ? "← 返回列表" : "← 返回卡片墙";
+
+    // 单按钮视图切换：图标与文案反映「当前是什么模式」，title 说明点了会去哪
+    if (viewToggle) {
+      viewToggle.dataset.mode = isList ? "list" : "grid";
+      const label = viewToggle.querySelector(".view-label");
+      if (label) label.textContent = isList ? "列表" : "卡片";
+      const nextName = isList ? "卡片" : "列表";
+      viewToggle.title = "切换到" + nextName;
+      viewToggle.setAttribute("aria-label", "当前" + (isList ? "列表" : "卡片") + "，点击切换到" + nextName);
+      viewToggle.setAttribute("aria-pressed", String(isList));
+    }
+
+    if (backBtn) backBtn.textContent = isList ? "← 返回列表" : "← 返回卡片";
 
     if (isPlayer) injectNoScroll(frame);
     savePrefs();
@@ -357,7 +382,7 @@
   }
 
   function closePlayer() {
-    setView("grid");
+    setView(viewBeforePlayer === "list" ? "list" : "grid");
     setTimeout(() => {
       if (playerEl && playerEl.hasAttribute("hidden")) {
         frame.src = "about:blank";
@@ -434,32 +459,34 @@
     );
   }
 
-  document.querySelectorAll("[data-view]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const v = btn.getAttribute("data-view");
-      if (v === "player") {
-        if (!models.length) return;
-        const cur = currentIndex();
-        openPlayer(cur >= 0 ? cur : 0);
-      } else {
-        setView(v);
-      }
-    });
-  });
+  function enterFocusPlayer() {
+    if (!models.length) return;
+    const cur = currentIndex();
+    openPlayer(cur >= 0 ? cur : 0);
+  }
 
-  document.querySelectorAll("[data-sort]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const k = btn.getAttribute("data-sort");
+  // 视图切换：卡片墙 ⇄ 列表，一个按钮来回切
+  if (viewToggle) {
+    viewToggle.addEventListener("click", () => {
+      setView(viewState === "list" ? "grid" : "list");
+    });
+  }
+
+  // 专注试玩独立成一个主按钮，不再混在视图切换组里
+  if (focusPlayBtn) focusPlayBtn.addEventListener("click", enterFocusPlayer);
+
+  // 排序维度走下拉；升降序仍由单独一个按钮控制
+  if (sortSelect) {
+    sortSelect.addEventListener("change", () => {
+      const k = sortSelect.value;
       if (!SORTS[k]) return;
-      // 再次点同一维度 → 切换升降序
-      if (sortKey === k) sortDesc = !sortDesc;
-      else { sortKey = k; sortDesc = false; }
+      sortKey = k;
       syncSortUI();
       renderCards();
       syncPlayerSwitch();
       savePrefs();
     });
-  });
+  }
 
   if (sortDirBtn) {
     sortDirBtn.addEventListener("click", () => {
@@ -520,8 +547,10 @@
   renderCards();
   renderLastUpdated();
   applyHash();
-  if (viewState === "player" && !currentId && models.length) {
-    openPlayer(0);
+  if (viewState === "player" && models.length) {
+    // 上次停在试玩页：优先回到上回那个产物，否则从第一个开始
+    const cur = currentIndex();
+    openPlayer(cur >= 0 ? cur : 0);
   } else {
     setView(viewState);
   }

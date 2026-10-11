@@ -20,19 +20,17 @@
   box-shadow: 0 0 6px rgba(0, 240, 255, 0.35);
 }
 
-.sort-tabs {
+.sort-group {
   display: flex;
   align-items: center;
   gap: 6px;
-  flex-wrap: wrap;
 }
 
-.sort-tabs .ctrl-label {
+.sort-group .ctrl-label {
   font-family: var(--display);
   font-size: 11px;
   letter-spacing: 0.14em;
   color: var(--dim);
-  margin-right: 2px;
 }
 
 .chip-btn {
@@ -53,13 +51,6 @@
   color: var(--cyan);
 }
 
-.chip-btn.active {
-  border-color: var(--cyan);
-  color: var(--cyan);
-  background: rgba(0, 240, 255, 0.1);
-  box-shadow: 0 0 14px rgba(0, 240, 255, 0.16);
-}
-
 .chip-btn.chip-dir {
   min-width: 68px;
   color: var(--magenta);
@@ -69,6 +60,59 @@
 .chip-btn.chip-dir:hover {
   border-color: var(--magenta);
   color: var(--magenta);
+}
+
+/* 排序维度下拉：原生箭头在深色底上几乎看不见，自绘一个 */
+.sort-select {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  padding: 6px 26px 6px 12px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--dim) 50%),
+    linear-gradient(135deg, var(--dim) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) calc(50% + 1px),
+    calc(100% - 9px) calc(50% + 1px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.sort-select:hover,
+.sort-select:focus {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  outline: none;
+}
+
+/* 下拉展开的选项列表跟随系统配色，必须显式给深色 */
+.sort-select option {
+  background: #0c1222;
+  color: var(--text);
+}
+
+/* ---------- 专注试玩（视图切换组件在 ../../../css/shell.css） ---------- */
+.focus-btn {
+  padding: 8px 18px;
+  gap: 8px;
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.35), 0 0 20px rgba(0, 240, 255, 0.28);
+}
+
+.focus-btn:hover {
+  box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.6), 0 0 28px rgba(0, 240, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+.focus-btn .ic {
+  width: 14px;
+  height: 14px;
 }
 
 /* ---------- 列表模式 ---------- */
@@ -145,12 +189,16 @@
   min-width: 260px;
 }
 
-.cards.list-mode .card-actions {
-  margin-top: 2px;
+/* 列表模式正文宽：标签与「试玩」并排一行，右边不再空一大块 */
+.cards.list-mode .stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.cards.list-mode .card-actions .primary-btn {
-  padding: 7px 18px;
+.cards.list-mode .card-foot {
+  margin-top: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .sr-only {
@@ -366,6 +414,13 @@
   gap: 10px;
 }
 
+/* 标题块必须吃掉剩余宽度：flex 子项默认按内容宽收缩，
+   不给它 flex:1 就会连同底下的属性区一起被压窄 */
+.card-id {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .card-body h3 {
   font-family: var(--display);
   font-size: 15px;
@@ -484,28 +539,29 @@
   opacity: 0.85;
 }
 
-/* 属性区：紧跟在标题与上传时间下方，改成紧凑的「标签 + 值」两列排布，
-   避免四个大方块挤占卡片正文宽度 */
+/* 属性区：整宽「规格条」。
+   原来是四个各自居中的小方块，放在 .card-head 里被标题块一起压窄，
+   只占卡片左半边、右边空一大块（列表模式尤其夸张）。
+   改成四格等分 + 1px 发丝分隔线（分隔线颜色靠格子之间露出的底色实现），
+   整条永远铺满卡片宽度，2 列（卡片墙）/ 4 列（列表）都填得满。 */
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px 10px;
-  align-items: center;
+  gap: 1px;
   margin-top: 10px;
+  border: 1px solid rgba(0, 240, 255, 0.12);
+  border-radius: 9px;
+  background: rgba(0, 240, 255, 0.13);
+  overflow: hidden;
 }
 
 .stat {
-  background: rgba(10, 15, 28, 0.7);
-  border: 1px solid rgba(0, 240, 255, 0.12);
-  border-radius: 8px;
-  padding: 6px 9px;
-  text-align: center;
+  background: rgba(10, 15, 28, 0.92);
+  padding: 6px 10px 7px;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0;
+  gap: 2px;
 }
 
 .stat span {
@@ -516,8 +572,7 @@
   font-weight: 400;
   line-height: 1.3;
   color: #7e9db0;
-  letter-spacing: 0.08em;
-  margin-bottom: 2px;
+  letter-spacing: 0.1em;
   white-space: nowrap;
 }
 
@@ -525,37 +580,66 @@
 .stat b {
   display: block;
   flex: 0 0 auto;
-  width: 100%;
-  min-height: 1.3em;
-  margin-top: 0;
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 400;
-  line-height: 1.3;
+  line-height: 1.35;
   color: #e6f2f8;
   letter-spacing: 0.02em;
-  white-space: normal;
-  word-break: break-word;
   text-align: left;
   overflow-wrap: anywhere;
-  word-break: break-word;
-  text-align: center;
-  font-synthesis: none;
+  text-synthesis: none;
   -webkit-font-smoothing: antialiased;
+}
+
+/* 标签行与「试玩」：卡片墙里标签必须独占整宽 —— 四个标签加上按钮宽度就超了，
+   并排会把标签裁掉十几到几十像素；列表模式正文够宽，才并排成一行。 */
+.card-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.cards:not(.list-mode) .card-foot {
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.cards:not(.list-mode) .card-foot .meta-row {
+  align-self: stretch;
+  width: 100%;
+}
+
+.card-foot .meta-row {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-top: 0;
+}
+
+/* 没有标签时留一个占位，把按钮顶到右边 */
+.foot-gap {
+  flex: 1 1 auto;
 }
 
 .card-actions {
   display: flex;
   gap: 8px;
+  flex: 0 0 auto;
   flex-wrap: wrap;
-  margin-top: 4px;
 }
 
 .card-actions a,
 .card-actions button {
-  flex: 1;
-  min-width: 110px;
   justify-content: center;
+}
+
+.card-actions .primary-btn {
+  min-width: 0;
+  padding: 8px 30px;
 }
 
 /* Focus / player — near-fullscreen overlay */
@@ -671,8 +755,12 @@
 @media (max-width: 720px) {
   .player-title .path { display: none; }
   .player-note { font-size: 11px; }
-  /* 标题区变窄，属性四格改单列，避免「Unsloth Desktop」这类长值被压断 */
-  .stat-grid { grid-template-columns: minmax(0, 1fr); }
+  /* 窄屏属性条统一两列：每格仍有 ~160px，12px 等宽字放得下
+     「Unsloth Desktop」；四列会压到 80px 把长值断成两行，单列又太费高度 */
+  .stat-grid,
+  .cards.list-mode .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 
   /* 列表模式在窄屏不能保持「216px 预览 + 正文」左右分栏：
      390px 屏上正文只剩 ~126px，属性网格被压到 55px 且卡片横向溢出。
@@ -697,11 +785,6 @@
 
   .cards.list-mode .card-body {
     padding: 12px 14px 14px;
-  }
-
-  /* 堆叠后属性回到两列，一行放得下四格的宽度了 */
-  .cards.list-mode .stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /* ---- 试玩区移动端适配 ----

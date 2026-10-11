@@ -3,7 +3,7 @@
  * ------------------------------------------------------------
  * projects/snake-llm-bench 与 projects/userscripts 共用的骨架：
  *   设计令牌 / 背景网格 / 左上角返回 / 容器 / Hero 面板 /
- *   meta-row 药丸 / 操作提示条 / 工具栏与视图切换 / 卡片墙 / 空态 / 页脚
+ *   meta-row 药丸 / 操作提示条 / 工具栏与视图切换 / 卡片 / 空态 / 页脚
  *
  * 页面专属样式（跑分块、试玩区、商店按钮等）留在各自的 style.css 里。
  * 引入顺序：fonts.css → shell.css → 页面 style.css
@@ -343,13 +343,35 @@ body.player-mode .bg-grid { display: none; }
   transform: translateY(-1px);
 }
 
-.view-tabs {
+/* ---------- 视图切换（卡片 / 列表，单按钮） ----------
+   两页共用：图标只显示当前模式那一个，按钮本身是状态指示器；
+   data-mode 由各页脚本同步，文案与 title 也由脚本改。 */
+.view-group {
   display: flex;
+  align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
-/* ---------- 卡片墙 ---------- */
+/* 内联 SVG 不给尺寸会被容器宽撑成巨图（实测能到 985px），这里统一锁死 */
+.ic {
+  width: 15px;
+  height: 15px;
+  display: block;
+  flex: 0 0 auto;
+  fill: currentColor;
+  stroke: none;
+}
+
+.view-toggle .view-label {
+  letter-spacing: 0.06em;
+}
+
+.view-toggle[data-mode="grid"] .ic-list,
+.view-toggle[data-mode="list"] .ic-grid {
+  display: none;
+}
+
+/* ---------- 卡片网格 ---------- */
 .cards {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));

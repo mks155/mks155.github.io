@@ -1,5 +1,5 @@
 // Userscripts · 油猴脚本合集 —— 渲染与交互
-// 卡片墙 / 列表两种视图，数据来自 js/data.js 的 window.USERSCRIPTS
+// 卡片 / 列表两种视图，数据来自 js/data.js 的 window.USERSCRIPTS
 (function () {
   "use strict";
 
@@ -8,8 +8,7 @@
   var cardsEl = document.getElementById("cards");
   var countEl = document.getElementById("script-count");
   var lastEl = document.getElementById("last-updated");
-  var tabGrid = document.getElementById("tab-grid");
-  var tabList = document.getElementById("tab-list");
+  var viewToggle = document.getElementById("view-toggle");
 
   var VIEW_KEY = "userscripts_view";
 
@@ -117,8 +116,18 @@
   function setView(view) {
     var isList = view === "list";
     if (cardsEl) cardsEl.classList.toggle("list-mode", isList);
-    if (tabGrid) tabGrid.classList.toggle("active", !isList);
-    if (tabList) tabList.classList.toggle("active", isList);
+
+    // 单按钮视图切换：图标与文案反映「当前是什么模式」，title 说明点了会去哪
+    if (viewToggle) {
+      viewToggle.dataset.mode = isList ? "list" : "grid";
+      var label = viewToggle.querySelector(".view-label");
+      if (label) label.textContent = isList ? "列表" : "卡片";
+      var nextName = isList ? "卡片" : "列表";
+      viewToggle.title = "切换到" + nextName;
+      viewToggle.setAttribute("aria-label", "当前" + (isList ? "列表" : "卡片") + "，点击切换到" + nextName);
+      viewToggle.setAttribute("aria-pressed", String(isList));
+    }
+
     renderCards(); // 两种视图的卡片结构不同，需重绘
     saveView(view);
   }
@@ -137,8 +146,12 @@
     else lastEl.textContent = "最后更新：" + text;
   }
 
-  if (tabGrid) tabGrid.addEventListener("click", function () { setView("grid"); });
-  if (tabList) tabList.addEventListener("click", function () { setView("list"); });
+  // 视图切换：卡片 ⇄ 列表，一个按钮来回切
+  if (viewToggle) {
+    viewToggle.addEventListener("click", function () {
+      setView(cardsEl && cardsEl.classList.contains("list-mode") ? "grid" : "list");
+    });
+  }
 
   if (countEl) countEl.textContent = String(scripts.length);
   renderCards();

@@ -1,6 +1,6 @@
 /* Userscripts · 油猴脚本合集 —— 页面专属样式
  * 共用骨架（令牌 / 背景 / 返回主页 / 容器 / Hero 面板 / 药丸 / 提示条 / 工具栏 /
- * 按钮 / 卡片墙 / 空态 / 页脚）已提炼到 ../../../css/shell.css。
+ * 按钮 / 卡片 / 空态 / 页脚）已提炼到 ../../../css/shell.css。
  * 本文件只保留脚本卡片与商店按钮相关的部分。
  */
 
@@ -195,7 +195,7 @@
   align-self: start;
   min-width: 118px;
 }
-/* 卡片墙宽 300px 一列时，max-content 列容不下按钮会回绕，这里允许换行也不至于溢出 */
+/* 卡片宽 300px 一列时，max-content 列容不下按钮会回绕，这里允许换行也不至于溢出 */
 .cards.list-mode .store-row { max-width: 100%; }
 .cards.list-mode .store-btn { text-align: center; }
 .cards.list-mode .card-body p {
