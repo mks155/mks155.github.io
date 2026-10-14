@@ -355,5 +355,143 @@ window.SNAKE_LLM_MODELS = [
     },
     note: "要先点开始，方向键、WASD、屏幕方向键和滑动都能用，手机上也有方向按钮。速度一直不变，越吃也不会变快，全程没有声音。",
     tags: ["可玩", "触屏完整", "无加速"]
+  },
+  {
+    id: "qwen3.8-9b-distill-q6_k",
+    name: "Qwen3.8-9B-Distill",
+    file: "models/Qwen3.8-9B-Distill-GGUF · Q6_K.html",
+    family: "Qwen",
+    quant: "Q6_K",
+    params: "9B",
+    backend: "Unsloth Desktop",
+    tps: 78.6,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 655,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 无输入画面不变 => 不自动开局；[T2 实测] btn-start「开始游戏」124x48 过 elementFromPoint 命中测试；[T1b 实测] 点击后变化 3 次、首次 61ms、间隔均值 95ms（声明 const gameSpeed=100）=> 生存测试通过 => boot 200。[T3 实测] ArrowUp/ArrowDown 派发后蛇分别撞上墙与下墙，w/s 得到完全相同的结果 => 方向键与 WASD 均生效；[N 实测] touchstart/touchmove/touchend 三者均已绑定 => 滑动通路成立；[A 实测] 屏幕方向键在 400px 窄视口下 .d-pad 实测 160x125、display:grid，四个 .mobile-btn 各 60x60 且 elementFromPoint 命中自身，绑 onclick=changeDirection(...) 即键盘通路已实测生效的同一函数；1000px 下该组元素为 0x0，由 @media(max-width:600px) 控制，属正常响应式行为、不是缺陷 => 三路全通 => ctrl 90。[T4 实测] 朝右时按左仍撞右墙 => 拒绝 180 度反转；[静态判定] 自撞用 snake.some 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；生成食物不检查蛇身 => FOOD_ON_SNAKE => 错两项 => rule 25。[T5 实测] 间隔均值 95ms，源码 gameSpeed 为 const 且无处赋值 => 固定速度 => pace 30。[T8 实测] 吃到 +10 分，score/highScore/finalScore 三元素齐备，读写同一 localStorage 键 snakeHighScore；[S] 写入点在结算分支内（写到局末）=> score 110。[T6 实测] 蛇身与食物均带 shadowBlur 发光、配色成体系，但吃到与死亡均无反馈动画 => vis 85。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常；.game-over-overlay 是 position:fixed 全屏模态、开局时 visibility:hidden，属设计而非错位；空格实测可暂停，「再玩一次」实测重开有效 => rob 90。[T10 实测] 唯一媒体查询在 600px 以下缩放画布，无 DPR、无 resize 监听、backing 恒为 400x400 => 仅 CSS 缩放 => adp 25。",
+      subs: { boot: 200, ctrl: 90, rule: 25, pace: 30, score: 110, vis: 85, sfx: 0, rob: 90, adp: 25 },
+      axes: { play: 315, feel: 140, show: 85, done: 115 },
+      defects: ["TAIL_COLLISION", "FOOD_ON_SNAKE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "要先点开始，方向键、WASD、屏幕方向键和滑动都能用，手机上也有方向按钮，空格能暂停。速度一直不变；食物会直接出现在蛇身上，贴着自己尾巴转也会算撞死。",
+    tags: ["可玩", "触屏完整", "食物压身"]
+  },
+  {
+    id: "lfm2.5-24b-iq3_xxs",
+    name: "LFM2.5-24B-A2B",
+    file: "models/LFM2.5-24B-A2B-GGUF · UD-IQ3_XXS.html",
+    family: "LFM2.5",
+    quant: "UD-IQ3_XXS",
+    params: "24B-A2B",
+    backend: "Unsloth Desktop",
+    tps: 92.5,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 470,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面即变化 => 自动开局；[T1b 实测] 6 秒内变化 8 次、首次 121ms、间隔均值 151ms（声明 setInterval(update,150)）=> 生存测试通过 => boot 200。[T3 实测·两轮互证] ArrowUp 与 w 派发后蛇均撞上墙且两轮结果一致 => 上方向键与 WASD 生效；[N 实测] touchstart/touchmove/touchend 一个都没绑定，可达控件中无任何方向键 => 无滑动、无屏幕方向键 => ctrl 35。[T4 实测] 朝右时按左仍撞右墙 => 拒绝 180 度反转；[静态判定] 自撞用 snake.some 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；placeFood 用 while(true)+snake.some 正确避开蛇身 => 错一项 => rule 45；[S] ArrowDown 与 s 的转向未取信：蛇只有 1 节，与食物的像素面积完全相同，自动判向不可靠，按 rubric 第九节 T3 陷阱标静态判定。[T5 实测] 间隔均值 151ms 恒定，无速度变量 => 固定速度 => pace 30。[T8 实测] HUD 只有一个 score 元素（文案「得分: N」，每吃一个 +1），无最高分元素、无 localStorage 读写 => 计分正确但最高分不落盘 => score 60。[T6 实测] 纯色块蛇身（#00ff88 方块）与纯色方块食物（#ff4757），无渐变无发光，吃到与死亡均无反馈 => vis 55。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常，产物没有结束遮罩故无定位问题，「重新开始」按钮 69x25 实测重开有效；[静态判定] 全文无任何暂停机制（探针测到的按键静止经判定为蛇已撞墙结束而非暂停）=> 暂停/重开缺一项 => rob 45。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 400x400 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 45, pace: 30, score: 60, vis: 55, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 280, feel: 90, show: 55, done: 45 },
+      defects: ["TAIL_COLLISION", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在玩，方向键和 WASD 都能转，但没有最高分、刷新就丢。速度一直不变，全程没有声音，贴着自己尾巴转会被判成撞死。",
+    tags: ["可玩", "自动开局", "无滑动"]
+  },
+  {
+    id: "lfm2.5-24b-q4_k_xl",
+    name: "LFM2.5-24B-A2B",
+    file: "models/LFM2.5-24B-A2B-GGUF · UD-Q4_K_XL.html",
+    family: "LFM2.5",
+    quant: "UD-Q4_K_XL",
+    params: "24B-A2B",
+    backend: "Unsloth Desktop",
+    tps: 34,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 620,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面即变化 => 自动开局；[T1b 实测] 6 秒内变化 12 次、首次 93ms、间隔均值 99ms（声明 gameSpeed=100）=> 生存测试通过 => boot 200。[T3 静态判定] 该产物蛇身用 hsl() 动态色，实测「最大连通域」包围盒四轮全部超过画布 75%、判不出朝向，按 rubric 第九节 T3 陷阱不采信单次矛盾测量；[N 实测] 未绑定任何 touch 事件，可达控件只有 score/length/gameCanvas/restartBtn，无任何方向键 => 无滑动、无屏幕方向键 => ctrl 35（仅键盘可用）。[T4 实测] 朝右时按左仍撞右墙 => 拒绝 180 度反转；[静态判定] 自撞用 for...of 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；placeFood 递归检查蛇身重生成、正确避开 => 错一项 => rule 45。[T5 静态判定] 吃到时 gameSpeed -= 2 并 clearInterval 后以新间隔重建定时器，加速真实生效 => pace 125；本轮实测间隔 99ms 时分数为 0、尚未吃到食物，该数据不具判别力。[T8 实测] score 与 length 两元素齐备，localStorage 一个键都没有 => 计分正确但最高分完全不持久化 => score 60。[T6 实测] 蛇身按 hsl 动态色沿身体渐变、配色成体系，但吃到与死亡均无反馈动画 => vis 85。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常，p 键暂停与「重新开始」124x48 均实测可用；[静态判定] .game-over 为 position:absolute 且 top/left 为 0、宽高各 100%，但全文没有任何 position:relative 的祖先，定位祖先为 static，实际相对视口定位、随视口尺寸漂离棋盘 => OVERLAY_ANCHOR => rob 70。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 400x400 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 45, pace: 125, score: 60, vis: 85, sfx: 0, rob: 70, adp: 0 },
+      axes: { play: 280, feel: 185, show: 85, done: 70 },
+      defects: ["TAIL_COLLISION", "OVERLAY_ANCHOR", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在玩，方向键能转，每吃一个食物速度就快一点，蛇身颜色沿身体渐变。最高分完全不记；游戏结束的面板会飘到棋盘外面去。",
+    tags: ["可玩", "加速节奏", "遮罩错位"]
+  },
+  {
+    id: "lfm2.5-24b-q6_k_xl",
+    name: "LFM2.5-24B-A2B",
+    file: "models/LFM2.5-24B-A2B-GGUF · UD-Q6_K_XL.html",
+    family: "LFM2.5",
+    quant: "UD-Q6_K_XL",
+    params: "24B-A2B",
+    backend: "Unsloth Desktop",
+    tps: 29.6,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 550,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1b 实测·本环境帧率影响，须结合下列实测判读] 无输入采样 6 秒变化 0 次，逐个尝试可达控件（score、high-score、gameCanvas、pauseBtn）与 空格/Enter/方向键/r/R 后仍变化 0 次，直接判读会得到 boot=0；但同页实测 requestAnimationFrame 正常触发（1 秒 744 帧），排除环境挂起。根因是 gameLoop() 每帧走一步且没有任何时间闸门，而 gameSpeed 虽声明并在吃到时自减却从未被读取（死代码），蛇从 x=10 走到右墙只需 10 步，在本环境 744 帧/秒下全程约 13ms，早于探针首次采样。[N 实测] 冻结帧的蛇身拖尾横跨第 7~19 列并贴住右墙（maxX=398），证明游戏确实完整跑完全程后撞墙结束，而非初始化失败或开局即死；画布 427 色、100% 不透明，首帧已完整渲染。[S] 按常规 60Hz 显示器折算约 16.7ms/步、10 步约 167ms；同批次 MiMo Q8_0 在同一测试环境实测步长 22ms（其有时间闸门），两者同量级，故按可进入游戏计 boot 200，帧率相关限制记入 defects 与本条。[T3 静态判定] 游戏在本环境于 13ms 内即结束，转向无法实测；[N 实测] 未绑定任何 touch 事件，可达控件中无任何方向键 => 无滑动、无屏幕方向键 => ctrl 35（仅键盘可用，源码 keydown 处理四个方向键）。[静态判定] 反向保护正确（if (direction.y !== 1) 等四条）；自撞用 isOnSnake 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；spawnFood 用 isOnSnake 校验后重roll、正确避开蛇身 => 错一项 => rule 45。[T5 静态判定] gameSpeed 只在吃到时自减、gameLoop 从不读取，实际步长等于显示器刷新率且无难度可调 => 固定速度 => pace 30。[T8 实测] score 与 high-score 两元素齐备，读写同一 localStorage 键 snakeHighScore，源码 if (score > highScore) 分支内更新；[S] 写入点在结算分支内（写到局末）=> score 110。[T6 实测] 蛇身按 hsl 动态色、食物双色、拖尾明显，但吃到与死亡均无反馈动画 => vis 85。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常，#canvas-container 为 position:relative、p 键与 pauseBtn 均实测可暂停；[N 实测] 页面没有任何重开控件，探针在全部可达控件中未找到 => 暂停/重开缺一项，另有 gameSpeed 死代码 => rob 45。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 400x400 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 45, pace: 30, score: 110, vis: 85, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 280, feel: 140, show: 85, done: 45 },
+      defects: ["TAIL_COLLISION", "DEAD_CODE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在玩，方向键能转，蛇身颜色会变、最高分也记着，还能按 P 暂停。速度跟着显示器刷新率走，在高分屏上会快到来不及反应；结束后没有重新开始的按钮。",
+    tags: ["可玩", "无加速", "暂停失效"]
+  },
+  {
+    id: "qwen3-coder-30b-iq1_m",
+    name: "Qwen3-Coder-30B-A3B-Instruct",
+    file: "models/Qwen3-Coder-30B-A3B-Instruct-GGUF · UD-IQ1_M.html",
+    family: "Qwen3-Coder",
+    quant: "UD-IQ1_M",
+    params: "30B-A3B",
+    backend: "Unsloth Desktop",
+    tps: 131.3,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 475,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面即变化 => 自动开局；[T1b 实测] 6 秒内变化 8 次、首次 157ms、间隔均值 150ms（声明 gameSpeed=150）=> 生存测试通过 => boot 200。[T3 静态判定] 本轮实测结果自相矛盾、不可采信：无输入基线测得撞上墙，而源码 initGame 里 direction 明确初始化为 'right'（应撞右墙）；按 s 测得撞右墙、按 w 测得撞上墙、反向后测得撞右墙，三者无法自洽，按 rubric 第九节 T3 陷阱改用源码通读。源码 keydown 的 switch 只列 ArrowUp/ArrowDown/ArrowLeft/ArrowRight 四个分支，WASD 完全未绑定；[N 实测] 未绑定任何 touch 事件，可达控件只有 gameCanvas 与 score，无任何方向键 => 无滑动、无屏幕方向键 => ctrl 35（仅方向键可用）。[T4 实测] 反向保护在源码中正确（if (direction !== 'down') 等四条）；[静态判定] 自撞用 for...of 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；generateFood 不检查蛇身 => FOOD_ON_SNAKE => 错两项 => rule 25。[T5 实测] 间隔均值 150ms 恒定，gameSpeed 除初始化外无处赋值、setInterval 只创建一次 => 固定速度 => pace 30。[T8 实测] HUD 只有一个 score 元素（文案「得分: N」，每吃一个 +10），无最高分元素、无 localStorage => 计分正确但最高分不落盘 => score 60。[T6 实测] 纯色蛇身（#00FF00 / #00AA00）与纯色方块食物（#FF0000），无渐变无发光，吃到与死亡均无反馈 => vis 55。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常，「重新开始」实测重开有效；[静态判定] #gameOver 为 position:absolute 而 #gameContainer 只有 text-align:center、全文无 position:relative 的祖先，定位祖先为 static => OVERLAY_ANCHOR => rob 70。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 400x400 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 25, pace: 30, score: 60, vis: 55, sfx: 0, rob: 70, adp: 0 },
+      axes: { play: 260, feel: 90, show: 55, done: 70 },
+      defects: ["TAIL_COLLISION", "FOOD_ON_SNAKE", "OVERLAY_ANCHOR", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在玩，只有方向键能转，WASD 按了没反应。速度一直不变；食物会直接出现在蛇身上，最高层也不记。",
+    tags: ["可玩", "自动开局", "食物压身"]
+  },
+  {
+    id: "qwen3-coder-30b-q4_k_m",
+    name: "Qwen3-Coder-30B-A3B-Instruct",
+    file: "models/Qwen3-Coder-30B-A3B-Instruct-GGUF · Q4_K_M.html",
+    family: "Qwen3-Coder",
+    quant: "Q4_K_M",
+    params: "30B-A3B",
+    backend: "Unsloth Desktop",
+    tps: 34.7,
+    uploadedAt: "2026-10-14",
+    review: {
+      rubric: "1.0",
+      score: 475,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 一加载即采样，无输入画面即变化 => 自动开局；[T1b 实测] 6 秒内变化 7 次、首次 56ms、间隔均值 114ms（声明 setTimeout(gameLoop,100)）=> 生存测试通过 => boot 200。[T3 静态判定] 该产物绘制纯色块蛇身，最大连通域与食物粘连，实测基线与四个方向的判向全部返回「四边都不贴」，四轮均无法判读，按 rubric 第九节 T3 陷阱不采信；改用源码通读：keydown 的 switch 只列 ArrowUp/ArrowDown/ArrowLeft/ArrowRight 与 r/R（重开）六个分支，WASD 完全未绑定；[N 实测] 未绑定任何 touch 事件，可达控件只有 score 与 game-over，无任何方向键 => 无滑动、无屏幕方向键 => ctrl 35（仅方向键可用）。[T4 实测] 反向保护在源码中正确（if (dy === 0) / if (dx === 0) 四条）；[静态判定] 自撞用 snake.slice(1).some(...) 去掉了蛇头但仍含本步即将移走的尾节 => TAIL_COLLISION；generateFood 不检查蛇身 => FOOD_ON_SNAKE => 错两项 => rule 25。[T5 实测] 间隔均值 114ms，源码为 setTimeout(gameLoop, 100) 固定递归、无任何变速逻辑 => 固定速度 => pace 30。[T8 实测] HUD 只有一个 score 元素（文案「得分: N」，每吃一个 +10），无最高分元素、无 localStorage => 计分正确但最高分不落盘 => score 60。[T6 实测] 纯色块蛇身（#fff / #006633 / #00cc66）与纯色方块食物（#ff0000），无渐变无发光，吃到与死亡均无反馈 => vis 55。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程无未捕获异常，game-over 面板 180x52 实测可见，源码 keydown 的 r/R 分支可重开；[静态判定] #game-over 为 position:absolute + top:50% 而 #game-container 只有 text-align:center、全文无 position:relative 的祖先，定位祖先为 static，实际相对视口居中、随视口尺寸漂离棋盘 => OVERLAY_ANCHOR => rob 70。[T10 实测] 无 DPR、无 resize 监听、无媒体查询，画布固定 400x400 => adp 0。",
+      subs: { boot: 200, ctrl: 35, rule: 25, pace: 30, score: 60, vis: 55, sfx: 0, rob: 70, adp: 0 },
+      axes: { play: 260, feel: 90, show: 55, done: 70 },
+      defects: ["TAIL_COLLISION", "FOOD_ON_SNAKE", "OVERLAY_ANCHOR", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在玩，方向键能转，撞死后按 R 或页面上的按钮能重来。WASD 没用，速度也一直不变；食物会直接出现在蛇身上，最高层不记。",
+    tags: ["可玩", "自动开局", "食物压身"]
   }
 ];

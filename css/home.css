@@ -136,16 +136,33 @@ a:hover { text-decoration: underline; }
 }
 .nav a { color: var(--dim); text-decoration: none; }
 .nav a:hover { color: var(--text); }
+/* 右上角 GitHub 入口：沿用 projects/userscripts 的 .gh-corner 外观
+   （同一枚徽标 + 32x32 圆角方块 + 毛玻璃底 + 悬停转青）。
+   保留 nav-cta 类名：窄屏下 .nav a:not(.nav-cta) 会被隐藏，
+   去掉 nav-cta 会把这个唯一入口一起藏掉。 */
 .nav-cta {
-  padding: 8px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  color: var(--cyan) !important;
-  background: rgba(0, 240, 255, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border: 1px solid rgba(0, 240, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(7, 11, 20, 0.75);
+  backdrop-filter: blur(8px);
+  color: var(--dim);
+  transition: 0.15s ease;
 }
+/* 内联 SVG 不给尺寸会被容器撑大，这里锁死 */
+.nav-cta svg { width: 16px; height: 16px; display: block; }
 .nav-cta:hover {
+  color: var(--cyan);
+  border-color: var(--border);
+  background: rgba(0, 240, 255, 0.1);
+  box-shadow: 0 0 18px rgba(0, 240, 255, 0.2);
   text-decoration: none;
-  background: rgba(0, 240, 255, 0.12);
 }
 
 main {
@@ -399,17 +416,35 @@ main {
 }
 .about-text a { border-bottom: 1px solid rgba(0, 240, 255, 0.35); }
 
+/* 两行间距收窄 */
 .site-footer {
   max-width: var(--max);
   margin: 0 auto;
-  padding: 22px;
+  padding: 24px 22px 22px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
-  justify-content: center;
-  gap: 12px;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   color: var(--dim);
   font-size: 0.85rem;
+  text-align: center;
 }
+
+/* 个人 slogan：单行小字，刻意压低存在感 ——
+   不加异色、不加发光，破折号是普通文本字符（能被直接选中复制，
+   不用 ::before 生成，那样复制时会漏掉），
+   只靠整体不透明度淡出，别抢正文与版权号的注意力 */
+.slogan {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  opacity: 0.5;
+  white-space: nowrap;
+}
+.footer-copy { opacity: 0.7; }
 
 /* 页脚里的 GitHub 链接 */
 .site-footer .footer-link {
