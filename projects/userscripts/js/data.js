@@ -14,7 +14,7 @@ window.USERSCRIPTS = [
     id: "download-router",
     name: "DownloadRouter",
     cnName: "下载路由",
-    icon: "/assets/svg/downloadrouter.svg",
+    icon: "https://raw.githubusercontent.com/mks155/DownloadRouter/refs/heads/main/docs/icon.svg",
     repo: "https://github.com/mks155/DownloadRouter",
     site: "https://github.com/mks155/DownloadRouter",
     license: "MIT",
@@ -32,7 +32,7 @@ window.USERSCRIPTS = [
     id: "huya-live-optimizer",
     name: "HuyaLiveOptimizer",
     cnName: "虎牙直播优化器",
-    icon: "/assets/svg/HuyaLiveOptimizer.svg",
+    icon: "https://raw.githubusercontent.com/mks155/HuyaLiveOptimizer/main/docs/icon.svg",
     repo: "https://github.com/mks155/HuyaLiveOptimizer",
     site: "https://github.com/mks155/HuyaLiveOptimizer",
     license: "MIT",
@@ -42,8 +42,8 @@ window.USERSCRIPTS = [
     summary: "进虎牙直播间自动切到最高画质并进入观影模式，顺带解锁被扫码限制的高档画质、给弹幕加一键 +1。",
     stores: [
       { name: "脚本猫", url: "https://scriptcat.org/zh-CN/script-show-page/8254", primary: true },
-      { name: "Greasy Fork", url: "https://greasyfork.org/zh-CN/scripts/595617-huyaliveoptimizer-%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8" },
-      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/HuyaLiveOptimizer_%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8" }
+      { name: "Greasy Fork", url: "https://greasyfork.org/zh-CN/scripts/595617-%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8-huyaliveoptimizer" },
+      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8_HuyaLiveOptimizer" }
     ]
   }
 ];
