@@ -384,12 +384,20 @@ body {
 }
 /* 已唱过的更暗，方便一眼看出唱到哪 */
 .ly-line.is-past { color: rgba(242, 246, 250, 0.16); opacity: 0.5; transform: scale(0.9); }
-/* 当前行：放大、提亮、加青影，是全场最显眼的一行 */
+/* 下一句：白色提亮一档。唱之前能先看到要接的词，比只标当前句从容 */
+.ly-line.is-next {
+  color: rgba(255, 255, 255, 0.82);
+  opacity: 0.95;
+  transform: scale(1);
+}
+/* 当前行：全场最显眼的一行，用赛博青（原色即播放键那道渐变的起点）。
+   不加任何辉光 —— 大字号下 text-shadow 会糊成一团，边缘发虚反而不好认字。
+   用纯色而不是渐变裁切，后者同样有整行透明的风险，歌词不能冒这个险。 */
 .ly-line.is-active {
-  color: #fff;
+  color: var(--cyan);
   opacity: 1;
-  transform: scale(1.08);
-  text-shadow: 0 0 22px rgba(0, 240, 255, 0.45);
+  transform: scale(1.1);
+  font-weight: 700;
 }
 
 .ly-empty {

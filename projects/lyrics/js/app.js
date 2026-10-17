@@ -314,7 +314,10 @@
       el.empty.hidden = true;
       el.totalT.textContent = window.LRC.fmt(state.data.duration);
       state.time = 0;
-      state.activeLine = -1;
+      // 用 -2 而不是 -1：render() 里 `idx === state.activeLine` 会早退，
+      // 开唱前 indexAt 返回 -1，若这里也写 -1 就一次类都不上，第一句连
+      // 「下一句」的提亮都没有。-2 强制首帧渲染，idx=-1 时第 0 行成为下一句。
+      state.activeLine = -2;
       setTimingUI(true);
       setPlaying(!!autoplay);
       render();
@@ -355,15 +358,36 @@
   }
 
   // ---------- 时钟 ----------
+  // 页面不放音频，只有一条虚拟时钟，所以"这首放完了"只能按最后一句歌词的
+  // 时间戳加一段尾奏来估 —— 没有别的依据。尾奏留 8 秒让器乐收一收再翻页。
+  var TAIL = 8;
+
   function tick() {
-    if (state.playing) {
-      state.time = (performance.now() - state.startedAt) / 1000 + state.offset;
-      if (state.data && state.time > state.data.duration + 6) {
-        state.time = state.data.duration + 6;
-        setPlaying(false);
+    // 循环绝不能因为一次异常就断掉：requestAnimationFrame(tick) 在函数末尾，
+    // 中间抛错就等于永久停摆，之后点播放也没反应 —— 现场那是最糟的失败方式。
+    try {
+      if (state.playing) {
+        state.time = (performance.now() - state.startedAt) / 1000 + state.offset;
+        if (state.data && state.time > state.data.duration + TAIL) {
+          // 放完接着放下一首；已经是最后一首就停在原地，不循环
+          var next = state.cur + 1;
+          if (next < TRACKS.length) {
+            toast("接着放《" + TRACKS[next].title + "》");
+            openSong(next, true);          // 内部已自行渲染，这里不再 render
+          } else {
+            state.time = state.data.duration + TAIL;
+            setPlaying(false);
+            render();
+          }
+        } else {
+          render();
+        }
       }
-      render();
+    } catch (err) {
+      if (window.console && console.error) console.error("[lyrics] tick 出错", err);
     }
+    // 无论如何都要排下一帧。这里绝不能出现 return —— 那会连同下面这行一起
+    // 跳过，时钟就此永久停摆（曾经真踩过：自动续播一次之后整个页面就不走了）。
     state.raf = requestAnimationFrame(tick);
   }
 
@@ -418,17 +442,23 @@
     for (var i = 0; i < nodes.length; i++) {
       nodes[i].classList.toggle("is-active", i === idx);
       nodes[i].classList.toggle("is-past", i < idx);
+      // 下一句提前提亮；还没开唱（idx=-1）时第一句就是「下一句」
+      nodes[i].classList.toggle("is-next", i === idx + 1);
     }
     scrollToLine(idx);
   }
 
   // 当前行滚到视口正中。留出上下各 1/3 屏，方便看上下文
   function scrollToLine(idx) {
-    var node = el.scroll.children[idx];
-    if (!node) return;
     var stageH = el.stage.clientHeight;
+    var max = Math.max(0, el.scroll.scrollHeight - stageH);
+    // idx 为 -1 表示还没唱到第一句，必须显式回到顶部。
+    // 换歌时浏览器只把容器的 scrollTop 按新内容的最大滚动量夹一下就保留原值，
+    // 并不会自己归零 —— 不主动滚回去的话，新歌会停在上首歌的底部，
+    // 第一行落在视口外老远，看着就像「卡住了」。
+    var node = idx >= 0 ? el.scroll.children[idx] : null;
+    if (!node) { el.scroll.scrollTo({ top: 0, behavior: "auto" }); return; }
     var want = node.offsetTop - stageH / 2 + node.offsetHeight / 2;
-    var max = el.scroll.scrollHeight - stageH;
     el.scroll.scrollTo({ top: Math.max(0, Math.min(max, want)), behavior: "smooth" });
   }
 
