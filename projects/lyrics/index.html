@@ -10,7 +10,7 @@
   <title>歌单 · 吉祥如意演唱会 重庆</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><path d='M9 20V12l7 5 7-5v8' fill='none' stroke='%2300f0ff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
   <link rel="stylesheet" href="../../css/fonts.css" />
-  <link rel="stylesheet" href="css/style.css?v=10" />
+  <link rel="stylesheet" href="css/style.css?v=15" />
 </head>
 <body>
 
@@ -68,6 +68,9 @@
       <span class="ly-song" id="ly-song">未选择歌曲</span>
       <span class="ly-part" id="ly-part">—</span>
     </div>
+    <button class="ly-icon" id="btn-adjust" aria-label="字号与偏移" title="字号与偏移">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h10M18 8h2M4 16h4M12 16h8"></path><circle cx="16" cy="8" r="2"></circle><circle cx="10" cy="16" r="2"></circle></svg>
+    </button>
     <button class="ly-icon" id="btn-list" aria-label="切换歌曲" title="切换歌曲">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
@@ -108,31 +111,34 @@
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12l9-6zM18 6v12"></path></svg>
         </button>
       </div>
-
-      <div class="ly-tools">
-        <button class="ly-icon" id="btn-smaller" aria-label="缩小字号" title="缩小字号">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
-        </button>
-        <button class="ly-icon" id="btn-bigger" aria-label="放大字号" title="放大字号">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-        </button>
-        <button class="ly-icon" id="btn-offset" aria-label="调整时间偏移" title="时间偏移：现场对不准就点">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg>
-        </button>
-      </div>
     </div>
-  </div>
 
-  <!-- 偏移量调节条，点时间按钮展开 -->
-  <div class="ly-offset" id="ly-offset" hidden>
-    <button class="ly-icon" id="off-minus" aria-label="提前">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
-    </button>
-    <span class="ly-offset-v" id="off-val">0.0s</span>
-    <button class="ly-icon" id="off-plus" aria-label="推后">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
-    </button>
-    <button class="ly-icon ly-icon-text" id="off-reset">归零</button>
+    <!-- 字号与偏移，点顶栏的调节键展开。
+         放在 .ly-ctrl 内部，用 bottom:100% 贴着底栏上沿，
+         底栏高度随布局变化时不必再维护魔法数字。 -->
+    <div class="ly-adjust" id="ly-adjust" hidden>
+    <div class="ly-adjust-row">
+      <span class="ly-adjust-l">字号</span>
+      <button class="ly-icon" id="fs-minus" aria-label="缩小字号">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+      </button>
+      <span class="ly-adjust-v" id="fs-val">28</span>
+      <button class="ly-icon" id="fs-plus" aria-label="放大字号">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+    </div>
+    <div class="ly-adjust-row" id="off-row">
+      <span class="ly-adjust-l">偏移</span>
+      <button class="ly-icon" id="off-minus" aria-label="歌词提前">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+      </button>
+      <span class="ly-adjust-v" id="off-val">0.0s</span>
+      <button class="ly-icon" id="off-plus" aria-label="歌词推后">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <button class="ly-icon ly-icon-text" id="off-reset">归零</button>
+    </div>
+    </div>
   </div>
 
   <!-- 歌曲抽屉 -->
@@ -153,6 +159,6 @@
 
 <script src="js/setlist.js?v=3"></script>
 <script src="js/lrc.js?v=2"></script>
-<script src="js/app.js?v=10"></script>
+<script src="js/app.js?v=12"></script>
 </body>
 </html>

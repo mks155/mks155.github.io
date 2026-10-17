@@ -37,10 +37,13 @@
     next: document.getElementById("btn-next"),
     back: document.getElementById("btn-back"),
     listBtn: document.getElementById("btn-list"),
-    bigger: document.getElementById("btn-bigger"),
-    smaller: document.getElementById("btn-smaller"),
-    offsetBtn: document.getElementById("btn-offset"),
-    offsetBar: document.getElementById("ly-offset"),
+    adjustBtn: document.getElementById("btn-adjust"),
+    adjustBox: document.getElementById("ly-adjust"),
+    fsVal: document.getElementById("fs-val"),
+    fsMinus: document.getElementById("fs-minus"),
+    fsPlus: document.getElementById("fs-plus"),
+    offRow: document.getElementById("off-row"),
+    offsetBar: document.getElementById("ly-adjust"),
     offVal: document.getElementById("off-val"),
     offMinus: document.getElementById("off-minus"),
     offPlusBtn: document.getElementById("off-plus"),
@@ -412,11 +415,17 @@
     el.badge.hidden = state.playing || !state.data;
   }
 
-  // 无时间轴时把播放键/上下首/进度条/偏移键收掉，它们在这份歌词上没有意义
+  // 无时间轴时把播放键/上下首/进度条收掉，它们在这份歌词上没有意义。
+  // 字号**保留**：静态歌词墙没有滚动跟随，正是最需要手动放大的时候，
+  // 所以只把偏移那一行藏起来，不整个禁用调节键。
   function setTimingUI(on) {
     if (el.btns) el.btns.classList.toggle("no-timing", !on);
     if (el.seek) el.seek.disabled = !on;
-    if (el.offsetBtn) { el.offsetBtn.disabled = !on; el.offsetBtn.hidden = !on; }
+    if (el.offRow) el.offRow.hidden = !on;
+    if (!on && el.adjustBox && !el.adjustBox.hidden) {
+      el.adjustBox.hidden = true;
+      if (el.adjustBtn) el.adjustBtn.classList.remove("is-on");
+    }
   }
 
   function stop() {
@@ -466,6 +475,7 @@
   function applySize() {
     var px = SIZES[state.sizeIdx];
     el.scroll.style.fontSize = px + "px";
+    if (el.fsVal) el.fsVal.textContent = String(px);
     saveStore(STORE_UI, { sizeIdx: state.sizeIdx });
   }
 
@@ -596,8 +606,8 @@
     if (e.key === " " || e.key === "Enter") { e.preventDefault(); if (state.data) setPlaying(!state.playing); }
   });
 
-  el.bigger.addEventListener("click", function () { bumpSize(1); });
-  el.smaller.addEventListener("click", function () { bumpSize(-1); });
+  el.fsPlus.addEventListener("click", function () { bumpSize(1); });
+  el.fsMinus.addEventListener("click", function () { bumpSize(-1); });
 
   el.prev.addEventListener("click", function () {
     if (!TRACKS.length) return;
@@ -633,9 +643,20 @@
     setPlaying(true);
   });
 
-  el.offsetBtn.addEventListener("click", function () {
-    el.offsetBar.hidden = !el.offsetBar.hidden;
-  });
+  // 顶栏调节键：展开字号 / 偏移面板。点面板外或按 Esc 收起
+  if (el.adjustBtn && el.adjustBox) {
+    el.adjustBtn.addEventListener("click", function () {
+      el.adjustBox.hidden = !el.adjustBox.hidden;
+      el.adjustBtn.classList.toggle("is-on", !el.adjustBox.hidden);
+    });
+    el.adjustBox.addEventListener("click", function (e) { e.stopPropagation(); });
+    document.addEventListener("click", function (e) {
+      if (el.adjustBox.hidden) return;
+      if (el.adjustBox.contains(e.target) || el.adjustBtn.contains(e.target)) return;
+      el.adjustBox.hidden = true;
+      el.adjustBtn.classList.remove("is-on");
+    });
+  }
   el.offMinus.addEventListener("click", function () { setOffset(state.offset - 0.5); });
   el.offPlusBtn.addEventListener("click", function () { setOffset(state.offset + 0.5); });
   el.offReset.addEventListener("click", function () { setOffset(0); });

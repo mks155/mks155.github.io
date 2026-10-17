@@ -22,7 +22,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 /* hidden 属性必须压得住组件自己的 display。
-   .ly-drawer / .ly-empty / .ly-offset 都设了 display:flex，
+   .ly-drawer / .ly-empty / .ly-adjust 都设了 display:flex，
    而作者样式的 display 优先级高于浏览器 UA 样式里的
    [hidden]{display:none} —— 结果 hidden=true 也关不掉，点了没反应。
    这条兜底是标准解法，新增组件也不会再踩。 */
@@ -301,8 +301,8 @@ body {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: calc(8px + env(safe-area-inset-top)) 10px 8px;
+  gap: 8px;
+  padding: calc(6px + env(safe-area-inset-top)) 8px 6px;
   border-bottom: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.92);
 }
@@ -349,6 +349,7 @@ body {
 }
 .ly-icon:active { background: rgba(0, 240, 255, 0.14); border-color: var(--cyan); }
 .ly-icon-text { font-size: 12px; font-family: var(--mono); }
+.ly-icon.is-on { background: rgba(0, 240, 255, 0.14); border-color: var(--cyan); color: var(--cyan); }
 
 /* 歌词舞台：点它暂停 */
 .ly-stage {
@@ -364,12 +365,14 @@ body {
   overflow-y: auto;
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  /* 上下各留一屏半：当前行永远在正中，前后文都在视野里 */
-  padding: 42vh 18px 42vh;
+  /* 上下留白：给 scrollToLine 把当前行居中留出余地。
+     原本 42vh，在 844px 高的屏上就是 354px 空白 —— 一开歌停在顶部时，
+     整屏几乎看不到词。压到 30vh / 34vh，开场就能直接看见头几句。 */
+  padding: 30vh 18px 34vh;
   text-align: center;
   font-family: var(--lyric);
   font-size: 28px;              /* app.js 会按用户选择覆盖 */
-  line-height: 1.75;
+  line-height: 1.5;             /* 原 1.75 太阔，单行 57px，一屏只剩十来行 */
   letter-spacing: 0.02em;
 }
 .ly-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
@@ -379,7 +382,7 @@ body {
   color: rgba(242, 246, 250, 0.32);
   opacity: 0.7;
   transform: scale(0.94);
-  padding: 6px 0;
+  padding: 5px 0;
   word-break: break-word;
 }
 /* 已唱过的更暗，方便一眼看出唱到哪 */
@@ -441,20 +444,29 @@ body {
 }
 
 /* ---------- 控制条 ---------- */
+/* 控件区是「时间 + 进度条」一行、按钮一行的两行网格。
+   原来时间单独占一行，只为了显示 0:39 / 3:05，白白吃掉一整行的竖向空间 ——
+   核心功能是看歌词，这里每省下一像素都还给歌词区。 */
 .ly-ctrl {
   flex: 0 0 auto;
-  padding: 8px 12px calc(10px + env(safe-area-inset-bottom));
+  position: relative;            /* 调节面板靠 bottom:100% 贴住底栏上沿 */
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  padding: 6px 10px calc(8px + env(safe-area-inset-bottom));
   border-top: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.95);
 }
 .ly-time {
+  grid-column: 1;
   display: flex;
   justify-content: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   color: var(--dim);
   font-variant-numeric: tabular-nums;
-  margin-bottom: 4px;
+  white-space: nowrap;
 }
 .ly-sep { opacity: 0.4; }
 
@@ -462,8 +474,9 @@ body {
 .ly-bar-track {
   -webkit-appearance: none;
   appearance: none;
+  grid-column: 2;
   width: 100%;
-  height: 26px;
+  height: 22px;
   background: transparent;
   cursor: pointer;
   display: block;
@@ -502,11 +515,12 @@ body {
    三列网格 1fr auto 1fr，第 1 列留空 —— 只有两个子元素，所以必须显式指定
    grid-column，否则 transport 会落进第 1 列、播放键就被顶到左边了。 */
 .ly-btns {
+  grid-column: 1 / -1;                 /* 跨满控件区两列 */
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .ly-transport {
   grid-column: 2;
@@ -514,28 +528,6 @@ body {
   align-items: center;
   justify-content: center;
   gap: 12px;
-}
-.ly-tools {
-  grid-column: 3;
-  justify-self: end;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-/* 控件条放不下两排时（手机竖屏），字号/偏移键换到第二行。
-   临界值是算出来的，不是试出来的：并排时两列要 1fr 等分，
-   工具键 148px 不被挤到左边压住播放组，需要
-     播放组 174 + 两个 gap 16 + 148×2 = 486px
-   而控件条实测宽度 ≈ 视口 - 39px，所以断点取 530px 留余量。
-   （不处理的话 390px 叠 40px、360px 叠 55px、320px 叠 75px、
-     500px 仍叠 5px。） */
-@media (max-width: 530px) {
-  .ly-btns {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 10px;
-  }
-  .ly-btns .ly-transport { grid-column: 1; }
-  .ly-btns .ly-tools { grid-column: 1; justify-self: center; }
 }
 
 /* 播放键做主视觉，演唱会单手盲按靠它 */
@@ -574,31 +566,46 @@ body {
 /* 静态歌词墙：不跟随时间变化，统一一个亮度 */
 .ly-line.is-plain { opacity: 0.86; }
 
-/* ---------- 偏移条 ---------- */
-.ly-offset {
+/* ---------- 字号 / 偏移 面板 ----------
+   这两个键原来常驻在底栏右侧。算过：要让播放键严格居中，左右两列必须等宽，
+   而三个 44px 的工具键塞不进手机的 1fr 列（390px 宽时需要 ≥418px 视口），
+   要么重叠要么占掉整整一行竖向空间。所以收进顶栏一个键里展开。 */
+.ly-adjust {
   position: absolute;
   left: 50%;
-  bottom: calc(104px + env(safe-area-inset-bottom));
+  bottom: 100%;                 /* 贴着 .ly-ctrl 上沿，不再用魔法数字 */
+  margin-bottom: 8px;
   transform: translateX(-50%);
   z-index: 15;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 6px;
-  padding: 8px;
+  padding: 10px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 18px;
   background: rgba(12, 12, 18, 0.97);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
-.ly-offset-v {
-  min-width: 56px;
+.ly-adjust-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ly-adjust-l {
+  width: 32px;
+  font-size: 12px;
+  color: var(--dim);
+  text-align: center;
+}
+.ly-adjust-v {
+  min-width: 52px;
   text-align: center;
   font-size: 14px;
   color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- 歌曲抽屉 ---------- */
+/* ---------- 抽屉 ---------- */
 .ly-drawer {
   position: fixed;
   inset: 0;
