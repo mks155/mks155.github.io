@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="凤凰传奇吉祥如意演唱会重庆站参考歌单，歌词时间轴滚动，适配手机现场观看。" />
+  <title>歌单 · 吉祥如意演唱会 重庆</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><path d='M9 20V12l7 5 7-5v8' fill='none' stroke='%2300f0ff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/></svg>" />
+  <link rel="stylesheet" href="../../css/fonts.css" />
+  <link rel="stylesheet" href="css/style.css?v=8" />
+</head>
+<body>
+
+<!-- ============ 歌单视图 ============ -->
+<section id="view-setlist" class="view view-setlist is-active">
+  <header class="sl-head">
+    <a class="back-home" href="/">← 主页</a>
+    <p class="sl-eyebrow">官方歌单</p>
+    <h1 class="sl-title">吉祥如意演唱会</h1>
+    <p class="sl-sub">重庆站 · <span id="sl-dates">—</span> · 共 <span id="sl-total">0</span> 首</p>
+  </header>
+
+  <div class="sl-import">
+    <label class="sl-btn sl-btn-primary">
+      <input type="file" id="lrc-input" accept=".lrc,.txt,text/plain" multiple hidden />
+      选择 .lrc 文件
+    </label>
+    <button class="sl-btn" id="btn-paste" type="button">手动粘贴</button>
+    <div class="sl-import-extra">
+      <button class="sl-btn sl-btn-sm" id="btn-backup" type="button">导出备份</button>
+      <label class="sl-btn sl-btn-sm">
+        <input type="file" id="backup-input" accept=".json,application/json" hidden />
+        恢复备份
+      </label>
+    </div>
+  </div>
+
+  <div class="sl-unmatched" id="sl-unmatched" hidden>
+    <h3 class="sl-unmatched-t">这些没对上歌单</h3>
+    <ul class="sl-unmatched-list" id="sl-unmatched-list"></ul>
+    <p class="sl-hint">改成「歌名.lrc」再选一次就能挂上。</p>
+  </div>
+
+  <div class="sl-paste" id="sl-paste" hidden>
+    <label class="sl-paste-label" for="paste-area">把带时间戳的歌词贴进来，每行形如 <code>[00:12.34]歌词内容</code></label>
+    <textarea class="sl-textarea" id="paste-area" rows="8" spellcheck="false"
+      placeholder="[ti:歌名]&#10;[00:01.00]第一行&#10;[00:05.00]第二行"></textarea>
+    <div class="sl-paste-row">
+      <input class="sl-input" id="paste-name" type="text" placeholder="歌名（用于对上歌单，可留空）" />
+      <button class="sl-btn sl-btn-primary" id="paste-ok" type="button">导入</button>
+      <button class="sl-btn" id="paste-cancel" type="button">取消</button>
+    </div>
+  </div>
+
+  <div id="sl-parts" class="sl-parts"></div>
+</section>
+
+<!-- ============ 歌词视图 ============ -->
+<section id="view-lyrics" class="view view-lyrics">
+  <header class="ly-bar">
+    <button class="ly-icon" id="btn-back" aria-label="返回歌单" title="返回歌单">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+    <div class="ly-bar-txt">
+      <span class="ly-song" id="ly-song">未选择歌曲</span>
+      <span class="ly-part" id="ly-part">—</span>
+    </div>
+    <button class="ly-icon" id="btn-list" aria-label="切换歌曲" title="切换歌曲">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+  </header>
+
+  <!-- 点这里暂停 / 继续 -->
+  <div class="ly-stage" id="ly-stage" role="button" tabindex="0" aria-label="点击暂停或继续">
+    <div class="ly-scroll" id="ly-scroll"></div>
+    <div class="ly-empty" id="ly-empty">
+      <p class="ly-empty-t">还没有歌词</p>
+      <label class="ly-btn ly-btn-primary">
+        <input type="file" id="lrc-input2" accept=".lrc,.txt,text/plain" multiple hidden />
+        选一个 .lrc
+      </label>
+    </div>
+    <div class="ly-pause-badge" id="ly-pause-badge" hidden>已暂停</div>
+  </div>
+
+  <div class="ly-ctrl">
+    <div class="ly-time">
+      <span id="ly-now">0:00</span>
+      <span class="ly-sep">/</span>
+      <span id="ly-total">0:00</span>
+    </div>
+
+    <input class="ly-bar-track" id="ly-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="播放进度" />
+
+    <div class="ly-btns" id="ly-btns">
+      <div class="ly-transport">
+        <button class="ly-icon" id="btn-prev" aria-label="上一首" title="上一首">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6v12L9 12zM6 6v12"></path></svg>
+        </button>
+        <button class="ly-play" id="btn-play" aria-label="播放" title="播放 / 暂停">
+          <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5l12 7.5-12 7.5z" fill="currentColor" stroke="none"></path></svg>
+          <svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14M16 5v14"></path></svg>
+        </button>
+        <button class="ly-icon" id="btn-next" aria-label="下一首" title="下一首">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6v12l9-6zM18 6v12"></path></svg>
+        </button>
+      </div>
+
+      <div class="ly-tools">
+        <button class="ly-icon" id="btn-smaller" aria-label="缩小字号" title="缩小字号">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+        </button>
+        <button class="ly-icon" id="btn-bigger" aria-label="放大字号" title="放大字号">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+        </button>
+        <button class="ly-icon" id="btn-offset" aria-label="调整时间偏移" title="时间偏移：现场对不准就点">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><path d="M12 7v5l3 2"></path></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 偏移量调节条，点时间按钮展开 -->
+  <div class="ly-offset" id="ly-offset" hidden>
+    <button class="ly-icon" id="off-minus" aria-label="提前">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg>
+    </button>
+    <span class="ly-offset-v" id="off-val">0.0s</span>
+    <button class="ly-icon" id="off-plus" aria-label="推后">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+    </button>
+    <button class="ly-icon ly-icon-text" id="off-reset">归零</button>
+  </div>
+
+  <!-- 歌曲抽屉 -->
+  <div class="ly-drawer" id="ly-drawer" hidden>
+    <div class="ly-drawer-panel">
+      <div class="ly-drawer-head">
+        <span>全部歌曲</span>
+        <button class="ly-icon" id="drawer-close" aria-label="关闭">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </button>
+      </div>
+      <div class="ly-drawer-list" id="ly-drawer-list"></div>
+    </div>
+  </div>
+</section>
+
+<div class="ly-toast" id="ly-toast"></div>
+
+<script src="js/setlist.js?v=3"></script>
+<script src="js/lrc.js?v=2"></script>
+<script src="js/app.js?v=6"></script>
+</body>
+</html>
