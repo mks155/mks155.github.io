@@ -158,11 +158,10 @@
   box-shadow: 0 0 30px rgba(0, 240, 255, 0.5);
   transform: translateY(-1px);
 }
+/* 已下架渠道：保持普通按钮外观，仅在文字上画一条删除线 */
 .store-btn.is-ghost {
-  background: transparent;
-  color: var(--dim);
+  text-decoration: line-through;
 }
-.store-btn.is-ghost:hover { color: var(--cyan); }
 
 /* ---------- 列表模式 ---------- */
 /* 列表模式：整页单列（shell.css 的 .cards 是多列，这里覆盖） */

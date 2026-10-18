@@ -49,8 +49,10 @@
   function storeButtons(s) {
     return (s.stores || [])
       .map(function (st) {
-        var cls = "store-btn" + (st.primary ? " is-primary" : "");
-        return '<a class="' + cls + '" href="' + escapeHtml(st.url) + '" target="_blank" rel="noopener">' +
+        var cls = "store-btn" + (st.primary ? " is-primary" : "") + (st.ghost ? " is-ghost" : "");
+        // ghost：渠道已下架，套用 is-ghost 样式（普通按钮 + 文字删除线）
+        var title = st.ghost ? ' title="该渠道已下架"' : "";
+        return '<a class="' + cls + '" href="' + escapeHtml(st.url) + '" target="_blank" rel="noopener"' + title + '>' +
           escapeHtml(st.name) + "</a>";
       })
       .join("");

@@ -7,7 +7,7 @@
 //
 // 说明字段约定：
 //   summary  卡片上唯一的描述，1–2 句话说清这脚本干什么，不拆段、不罗列要点
-//   stores   安装渠道，按推荐度排序，第一个视为首选
+//   stores   安装渠道，按推荐度排序，第一个视为首选；某渠道加 ghost:true 则标为已下架（删除线）
 //   repo     源码仓库，卡片右上角 GitHub 图标按钮的落点
 window.USERSCRIPTS = [
   {
@@ -25,7 +25,7 @@ window.USERSCRIPTS = [
     stores: [
       { name: "脚本猫", url: "https://scriptcat.org/zh-CN/script-show-page/8253", primary: true },
       { name: "Greasy Fork", url: "https://greasyfork.org/zh-CN/scripts/598571-%E4%B8%8B%E8%BD%BD%E8%B7%AF%E7%94%B1-download-router" },
-      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/%E4%B8%8B%E8%BD%BD%E8%B7%AF%E7%94%B1_Download_Router" }
+      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/%E4%B8%8B%E8%BD%BD%E8%B7%AF%E7%94%B1_Download_Router", ghost: true }
     ]
   },
   {
@@ -43,7 +43,7 @@ window.USERSCRIPTS = [
     stores: [
       { name: "脚本猫", url: "https://scriptcat.org/zh-CN/script-show-page/8254", primary: true },
       { name: "Greasy Fork", url: "https://greasyfork.org/zh-CN/scripts/595617-%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8-huyaliveoptimizer" },
-      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8_HuyaLiveOptimizer" }
+      { name: "OpenUserJS", url: "https://openuserjs.org/scripts/mks155/%E8%99%8E%E7%89%99%E7%9B%B4%E6%92%AD%E4%BC%98%E5%8C%96%E5%99%A8_HuyaLiveOptimizer", ghost: true }
     ]
   }
 ];
