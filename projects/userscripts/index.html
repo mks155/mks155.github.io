@@ -8,7 +8,7 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a0f1c'/><circle cx='16' cy='16' r='7' fill='%2300f0ff'/></svg>" />
   <link rel="stylesheet" href="../../../css/fonts.css" />
   <link rel="stylesheet" href="../../../css/shell.css?v=3" />
-  <link rel="stylesheet" href="css/style.css?v=15" />
+  <link rel="stylesheet" href="css/style.css?v=18" />
 </head>
 <body>
   <div class="bg-grid" aria-hidden="true"></div>
@@ -24,24 +24,22 @@
       <p class="eyebrow">油猴脚本</p>
       <h1><span>User Scripts</span></h1>
       <p>
-        浏览器脚本合集。装个脚本管理器就能用，装完刷新页面生效。每个脚本都开源在 GitHub。
+        浏览器脚本合集，每个脚本都开源在 GitHub。装个脚本管理器（<a href="https://scriptcat.org/" target="_blank" rel="noopener">脚本猫</a> / <a href="https://www.tampermonkey.net/" target="_blank" rel="noopener">Tampermonkey</a> / <a href="https://violentmonkey.github.io/" target="_blank" rel="noopener">Violentmonkey</a>）后点卡片里的渠道一键安装，或从 GitHub 导入 <code>.user.js</code>，装完刷新页面生效。
       </p>
       <div class="meta-row">
         <span class="pill">运行环境：<strong>脚本管理器</strong></span>
         <span class="pill">收录：<strong id="script-count">0</strong> 个脚本</span>
-        <span class="pill status-live">持续更新中</span>
-        <span class="pill status-live" id="last-updated" title="最近一次新增或更新的时间">最后更新：<strong>—</strong></span>
       </div>
     </header>
 
-    <aside class="controls-tip" role="note">
-      <span class="tip-label">安装提示</span>
+    <!-- 安装步骤已并入 Hero，这里换成免责声明 -->
+    <aside class="disclaimer" role="note">
+      <p class="disclaimer-t">免责声明</p>
       <p>
-        先装一个脚本管理器：
-        <a class="mgr" href="https://scriptcat.org/" target="_blank" rel="noopener">脚本猫 ScriptCat</a>
-        <a class="mgr" href="https://www.tampermonkey.net/" target="_blank" rel="noopener">Tampermonkey</a>
-        <a class="mgr" href="https://violentmonkey.github.io/" target="_blank" rel="noopener">Violentmonkey</a>
-        然后在下方卡片点脚本猫 / Greasy Fork / OpenUserJS 一键安装，或从 GitHub 手动导入 <code>.user.js</code>。
+        本页脚本均为个人自用工具的开源分享，非官方产品，与三方平台无任何隶属或合作关系。
+        脚本按「现状」提供，不对适用性、无缺陷或持续可用作任何担保 —— 平台一旦改版，相关功能可能随时失效。
+        请自行评估风险后决定是否安装使用：因安装、使用或无法使用本页脚本而导致的账号受限、数据丢失及其他任何直接或间接损失，均由使用者自行承担。
+        使用时请遵守相关平台的服务条款与当地法律法规。
       </p>
     </aside>
 
@@ -68,11 +66,7 @@
     <section class="cards" id="cards" aria-label="脚本列表"></section>
   </div>
 
-  <p class="footer-note">
-    脚本均为本人自用并开源 · 源码以 GitHub 仓库为准
-  </p>
-
-  <script src="js/data.js?v=5"></script>
-  <script src="js/app.js?v=6"></script>
+  <script src="js/data.js?v=6"></script>
+  <script src="js/app.js?v=7"></script>
 </body>
 </html>

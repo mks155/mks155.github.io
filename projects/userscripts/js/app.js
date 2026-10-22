@@ -7,7 +7,6 @@
 
   var cardsEl = document.getElementById("cards");
   var countEl = document.getElementById("script-count");
-  var lastEl = document.getElementById("last-updated");
   var viewToggle = document.getElementById("view-toggle");
 
   var VIEW_KEY = "userscripts_view";
@@ -19,14 +18,6 @@
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#39;");
-  }
-
-  function parseTime(v) {
-    if (!v) return -Infinity;
-    var m = String(v).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-    if (m) return Date.UTC(+m[1], +m[2] - 1, +m[3]);
-    var d = new Date(v);
-    return isNaN(d.getTime()) ? -Infinity : d.getTime();
   }
 
   function loadView() {
@@ -75,11 +66,9 @@
           .map(function (t) { return '<span class="tag">' + escapeHtml(t) + "</span>"; })
           .join("");
 
-        var meta = [
-          s.version ? "版本 " + escapeHtml(s.version) : "",
-          s.license ? escapeHtml(s.license) : "",
-          s.updatedAt ? "更新 " + escapeHtml(s.updatedAt) : ""
-        ].filter(Boolean).join(" · ");
+        // 卡片元信息只留开源协议：版本号与更新日期要跟着发版手动改，
+        // 一旦忘了改就是错的，不如不显示
+        var meta = s.license ? escapeHtml(s.license) : "";
 
         // 卡片头：图标 + 名称，GitHub 图标按钮靠右
         var head =
@@ -88,7 +77,7 @@
           '<div class="card-headtext">' +
           '<div class="card-cat">' + escapeHtml(s.cnName || "") + "</div>" +
           "<h3>" + escapeHtml(s.name) + "</h3>" +
-          '<div class="card-meta"><span>' + meta + "</span></div>" +
+          (meta ? '<div class="card-meta"><span>' + meta + "</span></div>" : "") +
           "</div>" +
           (s.repo
             ? '<a class="card-gh" href="' + escapeHtml(s.repo) + '" target="_blank" rel="noopener"' +
@@ -134,20 +123,6 @@
     saveView(view);
   }
 
-  function renderLastUpdated() {
-    if (!lastEl) return;
-    var latest = scripts.reduce(function (acc, s) {
-      var t = parseTime(s.updatedAt);
-      return t > acc.t ? { t: t, raw: s.updatedAt } : acc;
-    }, { t: -Infinity, raw: null });
-    if (!latest.raw) return;
-    var m = String(latest.raw).match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
-    var text = m ? m[1] + "-" + m[2] + "-" + m[3] : String(latest.raw);
-    var strong = lastEl.querySelector("strong");
-    if (strong) strong.textContent = text;
-    else lastEl.textContent = "最后更新：" + text;
-  }
-
   // 视图切换：卡片 ⇄ 列表，一个按钮来回切
   if (viewToggle) {
     viewToggle.addEventListener("click", function () {
@@ -157,6 +132,5 @@
 
   if (countEl) countEl.textContent = String(scripts.length);
   renderCards();
-  renderLastUpdated();
   setView(loadView());
 })();
