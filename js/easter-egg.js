@@ -39,6 +39,20 @@
     0x0d520
   ];
 
+  /* ---------- 节气 ----------
+   * 清明在 4 月 4/5/6 日、冬至在 12 月 21/22/23 日之间逐年移动，
+   * 这里按 1900-2100 记成表：一位一年、2 bit、高位在前，
+   * 值是「基准日 + 偏移」，基准日写在下面的规则里。 */
+  var QINGMING_MASK = "5a5a5a56565656565656565555555555555555151515151515151505050505050505050101010101010101000000000000001";
+  var DONGZHI_MASK = "5a5a5a5a565656565656565656555555555555555555151515151515151505050505050505050501010101010101010000001";
+
+  /* 某年这个节气相对基准日偏移几天；表外年份按基准日算 */
+  function termOffset(mask, year) {
+    var i = year - 1900;
+    if (i < 0 || i * 2 >= mask.length * 4) return 0;
+    return (parseInt(mask.charAt(i >> 2), 16) >> (6 - ((i & 3) * 2))) & 3;
+  }
+
   function leapMonth(y) {
     return LUNAR_INFO[y - 1900] & 0xf;
   }
@@ -116,8 +130,11 @@
    * rule.kind
    *   solar  公历 [from, to]，月份日拼成四位数字比大小，from > to 表示跨年
    *   lunar  农历 [月, 日] 区间，闰月不算
+   *   term   节气当天（清明、冬至这类日子逐年会动的）
    *   nth    某月第 n 个星期几（weekday：0 周日 … 6 周六）
    *   eve    除夕——明天是正月初一
+   * 除法定假期（春节初一至初三、劳动节 5/1-5/5、国庆 10/1-10/7）外，
+   * 其余节日都只在当天出现，不提前也不补过。
    * fx
    *   rain   字符下落（chars）
    *   float  符号漂浮（glyphs）
@@ -202,7 +219,7 @@
       line: "新的一年，从第一行开始",
       fx: "flake",
       colors: ["#7cc4ff", "#ffffff", "#ffd166"],
-      rule: { kind: "solar", from: 1231, to: 102 }
+      rule: { kind: "solar", from: 101, to: 101 }
     },
     {
       id: "qingren",
@@ -222,7 +239,7 @@
       line: "把喜欢说出口，别写在注释里",
       fx: "float",
       glyphs: ["💗", "💌", "✨"],
-      rule: { kind: "solar", from: 520, to: 521 }
+      rule: { kind: "solar", from: 520, to: 520 }
     },
     {
       id: "qingming",
@@ -232,7 +249,7 @@
       line: "雨落清明，出去走走",
       fx: "float",
       glyphs: ["🌿", "🌧️"],
-      rule: { kind: "solar", from: 404, to: 406 }
+      rule: { kind: "term", month: 4, day: 4, mask: QINGMING_MASK }
     },
     {
       id: "laodong",
@@ -302,7 +319,7 @@
       line: "感谢你为这个世界注入的每一行代码",
       fx: "rain",
       chars: "01",
-      rule: { kind: "solar", from: 1023, to: 1025 }
+      rule: { kind: "solar", from: 1024, to: 1024 }
     },
     {
       id: "halloween",
@@ -312,7 +329,7 @@
       line: "不给糖就捣蛋",
       fx: "float",
       glyphs: ["🎃", "🦇", "👻", "🕸️"],
-      rule: { kind: "solar", from: 1029, to: 1101 }
+      rule: { kind: "solar", from: 1031, to: 1031 }
     },
     {
       id: "dongzhi",
@@ -322,7 +339,7 @@
       line: "饺子还是汤圆，你定",
       fx: "float",
       glyphs: ["🥟", "❄️"],
-      rule: { kind: "solar", from: 1221, to: 1223 }
+      rule: { kind: "term", month: 12, day: 21, mask: DONGZHI_MASK }
     },
     {
       id: "shengdan",
@@ -332,7 +349,7 @@
       line: "拆礼物，许个愿",
       fx: "float",
       glyphs: ["🎄", "🎁", "❄️"],
-      rule: { kind: "solar", from: 1224, to: 1225 }
+      rule: { kind: "solar", from: 1225, to: 1225 }
     }
   ];
 
@@ -359,6 +376,11 @@
       if (!l || l.isLeap) return false;
       var v = l.m * 100 + l.d;
       return v >= r.from[0] * 100 + r.from[1] && v <= r.to[0] * 100 + r.to[1];
+    }
+
+    if (r.kind === "term") {
+      if (d.getMonth() + 1 !== r.month) return false;
+      return d.getDate() === r.day + termOffset(r.mask, d.getFullYear());
     }
 
     if (r.kind === "eve") {
