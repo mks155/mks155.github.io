@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>贪吃蛇游戏</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #2c3e50;
+    }
+    #game {
+      width: 400px;
+      height: 400px;
+      border: 2px solid #fff;
+      position: relative;
+    }
+    #score {
+      color: #fff;
+      font-size: 20px;
+      text-align: center;
+      margin-top: 10px;
+    }
+    #start {
+      width: 100px;
+      height: 40px;
+      background: #64c6ff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      margin: 10px auto;
+    }
+    #gameOver {
+      display: none;
+      color: #ff6b6b;
+      font-size: 30px;
+      text-align: center;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id="score">得分: 0</div>
+    <div id="gameOver">游戏结束！按 START 重新开始</div>
+    <div id="game"></div>
+    <button id="start">START</button>
+  </div>
+  <script>
+    const game = document.getElementById('game');
+    const score = document.getElementById('score');
+    const gameOverEl = document.getElementById('gameOver');
+    const startBtn = document.getElementById('start');
+
+    // 游戏状态
+    let snake = [{ x: 5, y: 5 }];
+    let direction = 'right';
+    let nextDirection = 'right';
+    let food = { x: 10, y: 10 };
+    let scoreCount = 0;
+    let gameLoopId = null;
+    let moveInterval = 100;
+
+    // 游戏板
+    const BOARD_WIDTH = 20;
+    const BOARD_HEIGHT = 20;
+
+    function createBoard() {
+      for (let y = 0; y < BOARD_HEIGHT; y++) {
+        for (let x = 0; x < BOARD_WIDTH; x++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          cell.style.cssText = `
+            position: absolute;
+            left: ${x * 20}px;
+            top: ${y * 20}px;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #45a5b7;
+            border-radius: 2px;
+          `;
+          game.appendChild(cell);
+        }
+      }
+    }
+
+    function render() {
+      // 清除旧的蛇身和食物
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach((cell) => {
+        if (cell.classList.contains('snake') || cell.classList.contains('food')) {
+          cell.classList.remove('snake', 'food');
+        }
+      });
+
+      // 绘制蛇
+      snake.forEach((part, index) => {
+        const x = part.x * 20;
+        const y = part.y * 20;
+        const head = index === 0;
+        const tail = index === snake.length - 1;
+        const cell = document.createElement('div');
+        cell.className = 'cell snake';
+        cell.style.cssText = `
+          position: absolute;
+          left: ${x}px;
+          top: ${y}px;
+          width: 18px;
+          height: 18px;
+          background: ${head ? '#ff6b6b' : '#64c6ff'};
+          border: ${tail ? '2px solid #2c3e50' : '2px solid #45a5b7'};
+          border-radius: 2px;
+        `;
+        game.appendChild(cell);
+      });
+
+      // 绘制食物
+      const fx = food.x * 20;
+      const fy = food.y * 20;
+      const foodCell = document.createElement('div');
+      foodCell.className = 'cell food';
+      foodCell.style.cssText = `
+        position: absolute;
+        left: ${fx}px;
+        top: ${fy}px;
+        width: 18px;
+        height: 18px;
+        background: #ffcb2b;
+        border: 2px solid #2c3e50;
+        border-radius: 50%;
+      `;
+      game.appendChild(foodCell);
+    }
+
+    function updateScore() {
+      score.textContent = `得分: ${scoreCount}`;
+    }
+
+    function placeFood() {
+      let x, y;
+      do {
+        x = Math.floor(Math.random() * BOARD_WIDTH);
+        y = Math.floor(Math.random() * BOARD_HEIGHT);
+      } while (snake.some((part) => part.x === x && part.y === y));
+      food = { x, y };
+    }
+
+    function gameStep() {
+      const head = snake[0];
+      const { x, y } = head;
+
+      let newX = x;
+      let newY = y;
+
+      if (nextDirection === 'up') {
+        newY = y - 1;
+        newDirection = 'up';
+      } else if (nextDirection === 'down') {
+        newY = y + 1;
+        newDirection = 'down';
+      } else if (nextDirection === 'left') {
+        newX = x - 1;
+        newDirection = 'left';
+      } else if (nextDirection === 'right') {
+        newX = x + 1;
+        newDirection = 'right';
+      }
+
+      // 边界检测
+      if (newX < 0 || newX >= BOARD_WIDTH || newY < 0 || newY >= BOARD_HEIGHT) {
+        endGame();
+        return;
+      }
+
+      // 自身检测
+      if (snake.some((part) => part.x === newX && part.y === newY)) {
+        endGame();
+        return;
+      }
+
+      direction = newDirection;
+      const newSnake = [{ x, y }];
+      newSnake.push(...snake);
+      if (newSnake.length > 100) {
+        newSnake.shift();
+      }
+      snake = newSnake;
+
+      if (food.x === newX && food.y === newY) {
+        scoreCount += 10;
+        updateScore();
+        placeFood();
+      }
+
+      render();
+    }
+
+    function endGame() {
+      if (gameLoopId) return;
+      gameLoopId = window.setInterval(gameStep, moveInterval);
+      clearInterval(gameLoopId);
+      gameOverEl.style.display = 'block';
+    }
+
+    function restart() {
+      if (gameLoopId) {
+        clearInterval(gameLoopId);
+      }
+      gameLoopId = null;
+      snake = [{ x: 5, y: 5 }];
+      direction = 'right';
+      nextDirection = 'right';
+      scoreCount = 0;
+      updateScore();
+      placeFood();
+      render();
+      gameOverEl.style.display = 'none';
+    }
+
+    function changeDirection(key) {
+      if (key === 'ArrowUp') {
+        nextDirection = 'up';
+      } else if (key === 'ArrowDown') {
+        nextDirection = 'down';
+      } else if (key === 'ArrowLeft') {
+        nextDirection = 'left';
+      } else if (key === 'ArrowRight') {
+        nextDirection = 'right';
+      }
+    }
+
+    function init() {
+      createBoard();
+      render();
+      placeFood();
+      updateScore();
+    }
+
+    startBtn.addEventListener('click', restart);
+
+    document.addEventListener('keydown', (event) => {
+      changeDirection(event.key);
+    });
+
+    init();
+  </script>
+</body>
+</html>

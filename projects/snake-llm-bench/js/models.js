@@ -608,5 +608,143 @@ window.SNAKE_LLM_MODELS = [
     },
     note: "点开始就能玩，方向键控制，吃到食物加十分。没有最高分记录，暂停后点继续会回到开局，这一局就白玩了。",
     tags: ["可玩", "无加速"]
+  },
+  {
+    id: "qwen3.6-35b-a3b-ud-q4_k_xl",
+    name: "Qwen3.6-35B-A3B",
+    file: "models/Qwen3.6-35B-A3B·UD-Q4_K_XL-25.8.html",
+    family: "Qwen3.6",
+    quant: "UD-Q4_K_XL",
+    params: "35B-A3B",
+    backend: "Strata",
+    tps: 25.8,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 740,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 无输入采样 1 秒画面变化 0 次，不自动开局。[T2 实测] startBtn 130x49、elementFromPoint 命中自身 => 可达；点击后 [T1b 实测] 6 秒内变化 9 次、首次 204ms => 生存测试通过 => boot 200。[T3 实测] 不按键时蛇撞右墙（绿色像素包围盒 maxX=398）；派发 ArrowUp 与 w 后均改为撞上墙（minY=1），派发 ArrowLeft 仍撞右墙 => 方向键与 WASD 生效、180° 反向被拒；页面无屏幕方向键、无 touch 监听 => ctrl 70。[T8 实测] 用受控食物连续吃 8 个，分数与最高分同步到 80，localStorage 键 snakeHighScore=80，刷新后仍显示 80 => 计分正确、最高分实时更新且跨会话持久化 => score 125。[T5 实测] 进食 8 次后相邻画面变化间隔由 159ms 降到 126ms；源码 gameSpeed 每吃一个 -2、下限 50 并重建定时器 => 随进度加速 => pace 125。[T9 实测] 全程 0 条未捕获异常；空格暂停后 700ms 画面指纹不变，再按恢复；结束遮罩的定位祖先是 relative 的包裹层，重开可用 => rob 90。[静态判定] 蛇身径向渐变、蛇眼随方向、食物双色高光，但吃到与死亡都没有反馈动画 => vis 85；全文无音频接口 => sfx 0；画布固定 400x400、无 DPR 与 resize => adp 0。自撞检测遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION => rule 45。",
+      subs: { boot: 200, ctrl: 70, rule: 45, pace: 125, score: 125, vis: 85, sfx: 0, rob: 90, adp: 0 },
+      axes: { play: 315, feel: 250, show: 85, done: 90 },
+      defects: ["TAIL_COLLISION", "NO_SWIPE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "点开始才动，方向键和 WASD 都能转，吃得越多跑得越快，最高分也记得住。贴着自己尾巴转弯会被判成撞死，全程没有声音。",
+    tags: ["可玩", "加速节奏", "高分反馈"]
+  },
+  {
+    id: "nanbeige4.3-33b-iq2_xxs",
+    name: "Nanbeige4.3-33B-GSQ-RCO",
+    file: "models/Nanbeige4.3-33B-GSQ-RCO-GGUF · IQ2_XXS.html",
+    family: "Nanbeige",
+    quant: "IQ2_XXS",
+    params: "33B",
+    backend: "Unsloth Desktop",
+    tps: 13.8,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 0,
+      grade: "E",
+      verdict: "开局失效",
+      evidence: "[T1 / T1b 实测] 页面加载即抛 TypeError: Cannot set properties of null（setting 'fillStyle'）：getContext('2D') 在本环境返回 null，initGame 首帧就中断；画布不透明像素 0、颜色数 0，1 秒采样变化 0 次；按 ArrowUp 后 6 秒仍 0 次变化，且每 100ms 继续抛同一个异常。[T2 实测] 重新开始按钮 84x44、elementFromPoint 命中自身 => 可达；点击后连续 3 秒采样仍 0 次变化 => 生存测试不通过，boot = 0，按 zeroRule 其余八项一律计 0。[静态判定] 即使上下文正常，蛇头坐标用像素（200）而边界按格子数（20）比较，第一步就会置 gameOver；newHead 计算后从未使用；无音效、无 resize。产物写了方向键/WASD、分数与重新开始按钮，但都观察不到，依 zeroRule 不发分，只记入 defects 与 note。",
+      subs: { boot: 0, ctrl: 0, rule: 0, pace: 0, score: 0, vis: 0, sfx: 0, rob: 0, adp: 0 },
+      axes: { play: 0, feel: 0, show: 0, done: 0 },
+      defects: ["UNIT_MISMATCH", "DIE_ON_STEP1", "DEAD_CODE", "NO_SWIPE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "进不去游戏：打开只有一块全黑的棋盘，按方向键、点重新开始都没有反应，得分一直是 0。",
+    tags: ["开局失效", "无加速"]
+  },
+  {
+    id: "arex-2-i1-iq2_s",
+    name: "AREX-2-i1",
+    file: "models/AREX-2-i1-GGUF · IQ2_S.html",
+    family: "AREX",
+    quant: "IQ2_S",
+    params: "—",
+    backend: "Unsloth Desktop",
+    tps: 37.4,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 435,
+      grade: "D",
+      verdict: "可玩",
+      evidence: "[T1 实测] 无输入 1 秒画面变化 1 次（首帧）后静止，遮罩提示「按空格开始游戏」=> 不自动开局。[T1b 实测] 按空格后 6 秒内变化 9 次、首次 102ms => 生存测试通过；入口靠按键、页面无可见开始控件 => boot 100。[T3 实测] 不按键时撞右墙（maxX=398）；ArrowUp 与 w 均改为撞上墙（minY=1），ArrowLeft 仍撞右墙 => 方向键与 WASD 生效、180° 反向被拒；无屏幕方向键、无 touch 监听 => ctrl 70。[T8 实测] 受控食物吃到一个后分数由 0 变 1，页面只有分数元素、无最高分、无 localStorage 读写 => 计分正确但最高分完全不持久化 => score 60。[静态判定] speed 初始 150 且全文无处赋值 => 固定速度 => pace 30；自撞检测遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION => rule 45；蛇头蛇身双色加方向眼、食物圆形，但吃到与死亡均无反馈动画 => vis 85；全文无音频接口 => sfx 0；没有暂停功能，重开按钮可用 => 暂停/重开缺一项 => rob 45；.game-over 为 position:fixed，相对视口而非棋盘 => OVERLAY_ANCHOR；画布固定 400x400、无 DPR 与 resize => adp 0。[T9 实测] 全程 0 条未捕获异常。",
+      subs: { boot: 100, ctrl: 70, rule: 45, pace: 30, score: 60, vis: 85, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 215, feel: 90, show: 85, done: 45 },
+      defects: ["TAIL_COLLISION", "NO_SWIPE", "NO_ACCEL", "NO_PERSIST", "OVERLAY_ANCHOR", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "按空格才能开始，方向键和 WASD 都能转，吃到食物分数会加。速度一直不变，没有最高分，也没有暂停；结束面板固定在屏幕中间，不跟着棋盘。",
+    tags: ["可玩", "无加速", "遮罩错位"]
+  },
+  {
+    id: "apex-35b-v1.0-iq1_s",
+    name: "Apex-35B-V1.0",
+    file: "models/Apex-35B-V1.0-GGUF · IQ1_S.html",
+    family: "Apex",
+    quant: "IQ1_S",
+    params: "35B",
+    backend: "Unsloth Desktop",
+    tps: 59.7,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 0,
+      grade: "E",
+      verdict: "开局失效",
+      evidence: "[T1 实测] 无输入 1 秒 DOM 指纹变化 0 次，不自动开局。[T2 实测] START 按钮 100x40、elementFromPoint 命中自身 => 可达；点击后 [T1b 实测] 连续 6 秒 DOM 指纹变化 0 次 => 生存测试不通过，boot = 0，按 zeroRule 其余八项一律计 0。[静态判定] restart() 只重置状态并重绘，从未创建主循环；全文唯一的 setInterval 在 endGame() 里创建后立即 clearInterval，而 endGame() 只能由从未运行的 gameStep() 调用，主循环永远不启动；render() 每次追加新的蛇/食物 div 且不删除旧节点，点击 START 后棋盘节点由 402 增至 404。产物写了 20x20 棋盘、食物避让与分数，但都观察不到，依 zeroRule 不发分，只记入 defects 与 note。",
+      subs: { boot: 0, ctrl: 0, rule: 0, pace: 0, score: 0, vis: 0, sfx: 0, rob: 0, adp: 0 },
+      axes: { play: 0, feel: 0, show: 0, done: 0 },
+      defects: ["BOOT_DEADLOCK", "DEAD_CODE", "NO_SWIPE", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "进不去游戏：点 START 只会重新画一遍棋盘，蛇一步也不动，方向键按了也没用，得分一直是 0。",
+    tags: ["开局失效", "无加速"]
+  },
+  {
+    id: "qwen3.5-4b-3d-coder-q8_0",
+    name: "Qwen3.5-4B-3D-Coder",
+    file: "models/Qwen3.5-4B-3D-Coder · Q8_0.html",
+    family: "Qwen3.5",
+    quant: "Q8_0",
+    params: "4B",
+    backend: "Unsloth Desktop",
+    tps: 85.8,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 0,
+      grade: "E",
+      verdict: "开局失效",
+      evidence: "[T1 / T1b 实测] 页面加载即抛 ReferenceError: THREE is not defined（第 312 行 new THREE.WebGLRenderer），module 脚本在此中断；typeof window.THREE 为 undefined，画布保持 300x150 默认 backing（CSS 拉伸到 800x654），2 秒内画面与分数均无变化。[T2 实测] 暂停按钮 72x36、elementFromPoint 命中自身，但点击没有任何效果；重玩按钮同样无法启动。[T9 实测] 控制台只有这一条未捕获异常，后续渲染、粒子、DPR 与 resize 逻辑均未执行 => 生存测试不通过，boot = 0，按 zeroRule 其余八项一律计 0。[静态判定] 产物写了 Three.js 场景、粒子、DPR 适配、resize 与指针滑动，但都观察不到，依 zeroRule 不发分，只记入 defects 与 note。",
+      subs: { boot: 0, ctrl: 0, rule: 0, pace: 0, score: 0, vis: 0, sfx: 0, rob: 0, adp: 0 },
+      axes: { play: 0, feel: 0, show: 0, done: 0 },
+      defects: ["DEAD_CODE", "NO_SOUND"]
+    },
+    note: "进不去游戏：打开只有标题和两个按钮，画面一直是空的，分数停在 0，暂停和重玩点了也没反应。",
+    tags: ["开局失效", "粒子", "DPR适配"]
+  },
+  {
+    id: "spark-x2.6-4b-bf16",
+    name: "Spark-X2.6-4B",
+    file: "models/Spark-X2.6-4B-GGUF · bf16.html",
+    family: "Spark",
+    quant: "bf16",
+    params: "4B",
+    backend: "Unsloth Desktop",
+    tps: 81.2,
+    uploadedAt: "2026-11-05",
+    review: {
+      rubric: "1.0",
+      score: 450,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 打开即自动开局，1 秒内画面变化 6 次、首次 205ms。[T1b 实测] 继续采样 6 秒，累计变化 9 次、首次 205ms => 生存测试通过 => boot 200。[T3 实测] 不按键时撞右墙（maxX=399）；ArrowUp 撞上墙（minY=0）、ArrowDown 撞下墙（maxY=399），w 仍撞右墙 => 仅方向键生效，WASD 完全未接；无屏幕方向键、无 touch 监听 => ctrl 35。[T4 实测] 朝右时按 ArrowLeft，152ms 即结束（基线 1527ms）=> 180° 反向没有被拒绝，直接撞进自己身体 => rule 错一项；[静态判定] 自撞循环从 i=1 起遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION，再错一项 => rule 25。[T8 实测] 受控食物吃到一个后分数由 0 变 10，页面只有分数元素、无最高分、无 localStorage 读写 => score 60。[静态判定] setInterval 固定 150ms、无任何速度赋值 => 固定速度 => pace 30；纯色块蛇身加深色蛇头、纯色圆食物 => vis 55；全文无音频接口 => sfx 0；没有暂停，点结束提示可重开，运行不报错 => rob 45；画布固定 400x400、无 DPR 与 resize => adp 0。[T9 实测] 全程 0 条未捕获异常。",
+      subs: { boot: 200, ctrl: 35, rule: 25, pace: 30, score: 60, vis: 55, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 260, feel: 90, show: 55, done: 45 },
+      defects: ["TAIL_COLLISION", "NO_SWIPE", "NO_ACCEL", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在跑，只有方向键能转，WASD 按了没反应。按反方向会立刻撞死自己，速度一直不变，也没有最高分和声音。",
+    tags: ["可玩", "自动开局", "无加速"]
   }
 ];

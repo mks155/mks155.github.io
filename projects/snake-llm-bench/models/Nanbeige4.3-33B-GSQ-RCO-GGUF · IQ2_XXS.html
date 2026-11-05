@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>贪吃蛇游戏</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #3f7f5f;
+            font-family: sans-serif;
+            margin: 0;
+        }
+
+        #game-container {
+            text-align: center;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        canvas {
+            margin: 10px auto;
+            border: 2px solid #e0e0e0;
+            background-color: #000;
+        }
+
+        #instructions {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #4caf70;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <h1>贪吃蛇</h1>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <div id="instructions">
+        使用方向键（↑ ↓ ← →）或 WASD 控制移动。
+        按空格键开始游戏，按 R 键重新开始。
+    </div>
+    <button id="restartBtn">重新开始</button>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2D');
+    const restartBtn = document.getElementById('restartBtn');
+
+    // 游戏参数配置
+    const gridWidth = 400;
+    const gridHeight = 400;
+    const cellSize = 20; // 格子大小
+    let snake = [];
+    let apple = {};
+    let score = 0;
+    let gameOver = false;
+    let gameLoopInterval = null;
+
+    // 初始化游戏状态
+    function initGame() {
+        snake = [
+            { x: gridWidth / 2, y: gridHeight / 2 },
+        ];
+        score = 0;
+        gameOver = false;
+        gameLoopInterval = null;
+        
+        // 设置初始食物位置
+        resetApple();
+        
+        clearCanvas();
+        drawSnake();
+    }
+
+    function resetApple() {
+        apple = {
+            x: Math.floor(Math.random() * (gridWidth / cellSize) + 1),
+            y: Math.floor(Math.random() * (gridHeight / cellSize) + 1)
+        };
+    }
+
+    function clearCanvas() {
+        ctx.fillStyle = 'black';
+        ctx.fillRect(0, 0, gridWidth, gridHeight); // 清空画布
+    }
+
+    function drawSnake() {
+        ctx.fillStyle = 'green';
+        ctx.fillRect(snake[0].x * cellSize, snake[0].y * cellSize, cellSize - 2, cellSize - 2);
+        
+        for (let i = 1; i < snake.length; i++) {
+            ctx.fillRect(snake[i].x * cellSize, snake[i].y * cellSize, cellSize - 2, cellSize - 2);
+        }
+    }
+
+    function gameLoop() {
+        // 清除画布并绘制蛇
+        clearCanvas();
+        drawSnake();
+
+        if (!gameOver) {
+            // 移动蛇头
+            let head = snake[0];
+            let newHead = {
+                x: head.x + (head.x > 0 ? -1 : 1), // 简化的移动方向逻辑
+                y: head.y
+            };
+            // 实际实现应结合按键与方向向量
+            
+            // 这里通过监听键盘事件来决定移动，见下方控制逻辑
+            
+            // 食物判断
+            if (head.x === apple.x && head.y === apple.y) {
+                score += 10;
+                score = score.toString();
+                score = parseInt(score); // 修正：上面一行是字符串加法，这里转为数字
+                snake.push({ x: head.x, y: head.y });
+                resetApple();
+            } else {
+                // 撞墙或咬到自己游戏结束
+                if (
+                    head.x < 0 || 
+                    head.x >= gridWidth / cellSize || 
+                    head.y < 0 || 
+                    head.y >= gridHeight / cellSize
+                ) {
+                    gameOver = true;
+                }
+            }
+        }
+        
+        // 渲染分数
+        ctx.fillStyle = 'white';
+        ctx.fillText(score, 10, 20);
+
+        if (!gameOver) {
+            gameLoopInterval = setInterval(gameLoop, 100); // 100毫秒刷新一次
+        } else {
+            clearInterval(gameLoopInterval);
+        }
+    }
+
+    // 键盘监听
+    document.addEventListener('keydown', (e) => {
+        if (!gameLoopInterval) {
+            // 开始游戏
+            gameLoopInterval = setInterval(gameLoop, 100);
+            return;
+        }
+
+        // 方向键控制
+        let currentHead = snake[0];
+        if (e.key === 'ArrowUp' || e.key === 'w') {
+            currentHead.y -= 1;
+        } else if (e.key === 'ArrowDown' || e.key === 's') {
+            currentHead.y += 1;
+        } else if (e.key === 'ArrowLeft' || e.key === 'a') {
+            currentHead.x -= 1;
+        } else if (e.key === 'ArrowRight' || e.key === 'd') {
+            currentHead.x += 1;
+        }
+    });
+
+    // 初始化启动
+    initGame();
+    gameLoop();
+
+    // 重新开始按钮点击事件
+    restartBtn.addEventListener('click', () => {
+        gameOver = false;
+        score = 0;
+        gameLoopInterval = null;
+        clearInterval(gameLoopInterval);
+        initGame();
+        gameLoop();
+    });
+</script>
+
+</body>
+</html>

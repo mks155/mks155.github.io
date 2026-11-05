@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>贪吃蛇大作战</title>
+
+  <style>
+    :root {
+      --bg: #071324;
+      --panel: rgba(8, 25, 43, 0.88);
+      --cyan: #63e6ff;
+      --lime: #a9ff63;
+      --text: #ffffff;
+      --muted: #8ba5bc;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg);
+      font-family: Inter, "Segoe UI", system-ui, sans-serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 13px 20px;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid rgba(99, 230, 255, 0.18);
+      border-radius: 999px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(14px);
+      font-size: 16px;
+      white-space: nowrap;
+    }
+
+    .score {
+      color: var(--lime);
+      font-weight: 800;
+      letter-spacing: 0.12em;
+    }
+
+    .badge {
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: rgba(99, 230, 255, 0.1);
+      color: var(--cyan);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+
+    .controls {
+      position: absolute;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 9px;
+      padding: 10px;
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid rgba(99, 230, 255, 0.18);
+      border-radius: 14px;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(14px);
+    }
+
+    button {
+      min-width: 72px;
+      padding: 9px 13px;
+      border: 1px solid rgba(99, 230, 255, 0.2);
+      border-radius: 9px;
+      color: var(--text);
+      background: rgba(99, 230, 255, 0.08);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 160ms ease;
+    }
+
+    button:hover {
+      background: rgba(99, 230, 255, 0.18);
+      border-color: rgba(99, 230, 255, 0.45);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .hint {
+      position: absolute;
+      right: 24px;
+      top: 28px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 11px;
+      text-align: right;
+      line-height: 1.7;
+      pointer-events: none;
+    }
+
+    .title {
+      position: absolute;
+      left: 24px;
+      top: 28px;
+      color: var(--cyan);
+      font-size: 25px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .title span {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 700px) {
+      .hud {
+        top: 14px;
+        width: calc(100% - 28px);
+        justify-content: center;
+        gap: 10px;
+        padding: 11px 15px;
+      }
+
+      .badge {
+        display: none;
+      }
+
+      .title {
+        left: 17px;
+        top: 24px;
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .controls {
+        bottom: 14px;
+        width: calc(100% - 28px);
+        justify-content: center;
+      }
+
+      button {
+        min-width: auto;
+        flex: 1;
+        padding: 9px 7px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+
+    <div class="title">贪吃蛇<span>大作战</span></div>
+
+    <div class="hud">
+      <span class="badge">LIVE GAME</span>
+      <span>得分</span>
+      <span class="score" id="score">0</span>
+    </div>
+
+    <div class="hint">
+      使用 <strong>← →</strong> 或 <strong>↑ ↓</strong> 移动<br />
+      数字 <strong>1 / 2 / 3 / 4</strong> 快速转向
+    </div>
+
+    <div class="controls">
+      <button id="pauseButton">暂停</button>
+      <button id="resetButton">重玩</button>
+    </div>
+  </div>
+
+  <script type="module">
+    const canvas = document.querySelector("#gameCanvas");
+    const scoreElement = document.querySelector("#score");
+    const pauseButton = document.querySelector("#pauseButton");
+    const resetButton = document.querySelector("#resetButton");
+
+    // 游戏配置
+    const TILE = 16;
+    const GRID = 24;
+    const INITIAL_SPEED = 9;
+    const SPEED_STEP = 0.7;
+
+    let score = 0;
+    let gameSpeed = INITIAL_SPEED;
+    let paused = false;
+    let firstPerson = true;
+
+    // 蛇的初始位置，头部在 (0, 0)
+    let snake = [];
+    for (let i = 0; i < 5; i++) {
+      snake.push({ x: -(i * TILE), y: -4 });
+    }
+
+    // 食物
+    let food = { x: 0, y: 0 };
+
+    // 玩家输入，使用 Set 避免重复按键
+    const input = new Set();
+    const initialInput = new Set();
+
+    function resetInput() {
+      input.clear();
+    }
+
+    function addInput(key) {
+      if (key === "ArrowLeft" || key === "1") initialInput.add("left");
+      if (key === "ArrowRight" || key === "2") initialInput.add("right");
+      if (key === "ArrowUp" || key === "3") initialInput.add("up");
+      if (key === "ArrowDown" || key === "4") initialInput.add("down");
+    }
+
+    window.addEventListener("keydown", (event) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) {
+        event.preventDefault();
+        addInput(event.key);
+      }
+    });
+
+    window.addEventListener("keyup", resetInput);
+    window.addEventListener("blur", resetInput);
+
+    // 触屏操作
+    let dragging = false;
+    let lastPointerX = 0;
+    let lastPointerY = 0;
+
+    canvas.addEventListener("pointerdown", (event) => {
+      dragging = true;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+      canvas.setPointerCapture(event.pointerId);
+    });
+
+    canvas.addEventListener("pointermove", (event) => {
+      if (!dragging) return;
+
+      const dx = event.clientX - lastPointerX;
+      const dy = event.clientY - lastPointerY;
+      lastPointerX = event.clientX;
+      lastPointerY = event.clientY;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        addInput(dx > 0 ? "right" : "left");
+      } else {
+        addInput(dy > 0 ? "down" : "up");
+      }
+    });
+
+    canvas.addEventListener("pointerup", () => {
+      dragging = false;
+      resetInput();
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+      dragging = false;
+      resetInput();
+    });
+
+    // 游戏初始化
+    function startGame() {
+      snake = [
+        { x: 0, y: -4 },
+        { x: -TILE, y: -4 },
+        { x: -2 * TILE, y: -4 },
+        { x: -3 * TILE, y: -4 }
+      ];
+
+      score = 0;
+      gameSpeed = INITIAL_SPEED;
+      scoreElement.textContent = score;
+      resetInput();
+    }
+
+    startGame();
+
+    // 渲染相关
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: false
+    });
+
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x071324);
+
+    const camera = new THREE.PerspectiveCamera(
+      45,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      100
+    );
+
+    const hemisphere = new THREE.HemisphereLight(0xbfe9ff, 0x081320, 2);
+    scene.add(hemisphere);
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 3.5);
+    keyLight.position.set(4, 7, 5);
+    keyLight.castShadow = true;
+    keyLight.shadow.mapSize.set(1024, 1024);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0x63e6ff, 2);
+    rimLight.position.set(-5, 3, -4);
+    scene.add(rimLight);
+
+    // 游戏场地
+    const floorMaterial = new THREE.MeshStandardMaterial({
+      color: 0x0b2138,
+      roughness: 0.72,
+      metalness: 0.12
+    });
+
+    const floor = new THREE.Mesh(
+      new THREE.PlaneGeometry(GRID * TILE, GRID * TILE),
+      floorMaterial
+    );
+    floor.rotation.x = -Math.PI / 2;
+    floor.position.y = -TILE * 0.5 - 0.02;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // 场地边框
+    const borderMaterial = new THREE.MeshStandardMaterial({
+      color: 0x173d58,
+      emissive: 0x0a6c89,
+      emissiveIntensity: 0.4,
+      roughness: 0.45
+    });
+
+    const borderThickness = TILE * 0.45;
+    const borderSegments = [];
+
+    function addBorderSegment(x1, y1, x2, y2) {
+      const length = Math.hypot(x2 - x1, y2 - y1);
+      const geometry = new THREE.BoxGeometry(length, 0.12, borderThickness);
+      const mesh = new THREE.Mesh(geometry, borderMaterial);
+      mesh.position.set((x1 + x2) / 2, -TILE * 0.5 + 0.04, (y1 + y2) / 2);
+      mesh.rotation.y = -Math.atan2(y2 - y1, x2 - x1);
+      scene.add(mesh);
+    }
+
+    for (let i = 0; i < GRID; i++) {
+      const x = -GRID * TILE / 2 + i * TILE;
+      const y = -GRID * TILE / 2 + i * TILE;
+
+      addBorderSegment(x, y, x + TILE, y);
+      addBorderSegment(x + TILE, y, x + TILE, y + TILE);
+    }
+
+    // 蛇的创建
+    const snakeMaterial = new THREE.MeshStandardMaterial({
+      color: 0x8cff78,
+      emissive: 0x2b9d38,
+      emissiveIntensity: 0.55,
+      roughness: 0.38
+    });
+
+    const headMaterial = new THREE.MeshStandardMaterial({
+      color: 0xd8ff9a,
+      emissive: 0x64d74f,
+      emissiveIntensity: 0.8,
+      roughness: 0.3
+    });
+
+    const snakeSegments = [];
+
+    function createSnakeSegment(position) {
+      const geometry = new THREE.BoxGeometry(TILE * 0.82, TILE * 0.82, TILE * 0.82);
+      const mesh = new THREE.Mesh(geometry, snakeMaterial);
+      mesh.position.set(position.x, -TILE * 0.5 + 0.13, position.y);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+      snakeSegments.push(mesh);
+    }
+
+    snake.forEach(createSnakeSegment);
+
+    // 食物
+    const foodGroup = new THREE.Group();
+    scene.add(foodGroup);
+
+    const foodGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(TILE * 0.48, 24, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffc75a })
+    );
+    foodGlow.position.set(food.x, -TILE * 0.5 + 0.3, food.y);
+    foodGroup.add(foodGlow);
+
+    const foodCore = new THREE.Mesh(
+      new THREE.SphereGeometry(TILE * 0.18, 20, 14),
+      new THREE.MeshBasicMaterial({ color: 0xffe56b })
+    );
+    foodCore.position.set(food.x, -TILE * 0.5 + 0.38, food.y);
+    foodGroup.add(foodCore);
+
+    // 粒子效果
+    const particles = [];
+    const particleMaterial = new THREE.MeshBasicMaterial({
+      color: 0xa9ff63,
+      transparent: true,
+      opacity: 0.8
+    });
+
+    function spawnParticles(x, y) {
+      for (let i = 0; i < 12; i++) {
+        const geometry = new THREE.BoxGeometry(
+          TILE * (0.15 + Math.random() * 0.3),
+          TILE * (0.15 + Math.random() * 0.3),
+          TILE * (0.15 + Math.random() * 0.3)
+        );
+
+        const particle = new THREE.Mesh(geometry, particleMaterial);
+        particle.position.set(
+          x + (Math.random() - 0.5) * TILE,
+          -TILE * 0.5 + 0.25,
+          y + (Math.random() - 0.5) * TILE
+        );
+
+        particles.push({
+          mesh: particle,
+          speed: 2 + Math.random() * 3,
+          size: TILE * (0.18 + Math.random() * 0.35)
+        });
+      }
+    }
+
+    // 游戏逻辑
+    const initialHead = snake[0];
+    let currentHead = { ...initialHead };
+
+    function placeFood() {
+      let validPosition = false;
+
+      while (!validPosition) {
+        food.x = Math.floor(Math.random() * GRID) * TILE;
+        food.y = Math.floor(Math.random() * GRID) * TILE;
+
+        const onSnake = snake.some(
+          (segment) => segment.x === food.x && segment.y === food.y
+        );
+
+        if (!onSnake) {
+          validPosition = true;
+        }
+      }
+    }
+
+    placeFood();
+
+    function updateSnake() {
+      currentHead.x += input.has("left") ? -TILE : currentHead.x + input.has("right") ? TILE : currentHead.x;
+      currentHead.y += input.has("up") ? -TILE : currentHead.y + input.has("down") ? TILE : currentHead.y;
+
+      // 撞墙判定
+      if (currentHead.x < 0 || currentHead.x >= GRID * TILE) {
+        return false;
+      }
+      if (currentHead.y < 0 || currentHead.y >= GRID * TILE) {
+        return false;
+      }
+
+      // 撞到自己
+      for (let i = 1; i < snake.length; i++) {
+        if (snake[i].x === currentHead.x && snake[i].y === currentHead.y) {
+          return false;
+        }
+      }
+
+      snake.unshift(currentHead);
+
+      const headIndex = snake.findIndex((segment) => segment.x === currentHead.x && segment.y === currentHead.y);
+      snake[headIndex] = { ...currentHead };
+
+      // 吃到食物
+      if (snake[0].x === food.x && snake[0].y === food.y) {
+        score += 10;
+        gameSpeed = Math.max(4, gameSpeed - SPEED_STEP);
+        scoreElement.textContent = score;
+        placeFood();
+        spawnParticles(food.x, food.y);
+      }
+
+      snake.pop();
+
+      snakeSegments.forEach((mesh, index) => {
+        const segment = snake[index];
+        mesh.position.x = segment.x;
+        mesh.position.y = -TILE * 0.5 + 0.13 + segment.y;
+      });
+
+      return true;
+    }
+
+    function updateParticles() {
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const particle = particles[i];
+        particle.mesh.position.y -= particle.speed * 0.045;
+        particle.mesh.rotation.x += 0.25 * 0.045;
+        particle.mesh.rotation.z += 0.18 * 0.045;
+        particle.mesh.scale.multiplyScalar(0.96);
+
+        if (particle.mesh.position.y < -TILE * 0.5 + 0.2) {
+          particles.splice(i, 1);
+        }
+      }
+    }
+
+    function updateCamera() {
+      camera.position.set(
+        currentHead.x * TILE,
+        7,
+        currentHead.y * TILE
+      );
+      camera.lookAt(currentHead.x * TILE, -TILE * 0.5, currentHead.y * TILE);
+    }
+
+    const clock = new THREE.Clock();
+    let elapsed = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+
+      if (!paused) {
+        elapsed += delta;
+
+        // 使用游戏速度控制移动间隔
+        const movementInterval = 1 / gameSpeed;
+        const moveCount = Math.floor(elapsed / movementInterval) % GRID;
+
+        if (moveCount > 0) {
+          resetInput();
+
+          if (input.size === 2) {
+            const keys = [...input];
+            if (keys[0] === "left" && keys[1] === "right") input.add("left");
+            else if (keys[0] === "right" && keys[1] === "left") input.add("right");
+            else if (keys[0] === "up" && keys[1] === "down") input.add("up");
+            else if (keys[0] === "down" && keys[1] === "up") input.add("down");
+          }
+
+          updateSnake();
+        }
+
+        updateParticles();
+        updateCamera();
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    // 暂停和重玩
+    pauseButton.addEventListener("click", () => {
+      paused = !paused;
+      pauseButton.textContent = paused ? "继续" : "暂停";
+    });
+
+    resetButton.addEventListener("click", () => {
+      startGame();
+    });
+
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    });
+  </script>
+</body>
+</html>
