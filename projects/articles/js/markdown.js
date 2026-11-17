@@ -76,9 +76,13 @@
     s = s.replace(/\[([^\]]*)\]\(([^)\s]+)\)/g, function (whole, text, url) {
       var href = safeUrl(url);
       if (!href) return whole; // 协议不安全就当普通文本
-      // text 取自已转义的字符串，不能再转义一次
+      // text 取自已转义的字符串，不能再转义一次。
+      // 链接文字里可能嵌着行内代码（已被换成占位符），
+      // 这里先就地还原，否则占位符会被封进 <a> 里、
+      // 最后统一还原那一步扫不到，页面上会露出一个孤零零的序号。
+      var label = emphasis(text).replace(PH_RE, function (_, k) { return store[+k]; });
       return keep('<a href="' + href + '" target="_blank" rel="noopener">' +
-        emphasis(text) + "</a>");
+        label + "</a>");
     });
 
     // 3. 裸 URL 自动链接

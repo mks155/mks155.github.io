@@ -20,5 +20,13 @@ window.ARTICLES = [
     date: "2026-10-08",
     tags: ["OpenCode", "配置指南"],
     summary: "把任意 OpenAI 兼容的本地或远程服务接进 OpenCode：查参数、写配置、刷新、验证，外附常见错误对照表。"
+  },
+  {
+    id: "systemhelper-guide",
+    title: "手机里的 SystemHelper 是什么，怎么安全处理掉",
+    file: "md/SystemHelper-通用处置指南.md",
+    date: "2026-11-18",
+    tags: ["Android", "处置指南"],
+    summary: "运营商预装的 SystemHelper 采集了什么、为什么在设置里卸不掉，以及不 root 就能冻结它的完整流程：adb 下载（官方直链 / 网盘）、四步冻结、验证、恢复、一键 bat；文末附给 AI 用的 Bot 执行协议。"
   }
 ];

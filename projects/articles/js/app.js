@@ -92,7 +92,9 @@
     setMode(true);
 
     // encodeURI 处理中文 / 空格 / · 之类的字符
-    fetch(encodeURI(a.file))
+    // cache: "no-cache" 让浏览器每次都向服务器确认一遍（没改就是 304），
+    // 否则改完 .md 刷新页面还是旧的渲染结果。
+    fetch(encodeURI(a.file), { cache: "no-cache" })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.text();
@@ -123,8 +125,13 @@
 
   function routeFromHash() {
     var m = location.hash.match(/^#a=(.+)$/);
-    if (m) openArticle(decodeURIComponent(m[1]));
-    else closeReader();
+    if (m) {
+      openArticle(decodeURIComponent(m[1]));
+      return;
+    }
+    // 正文里的标题锚点（#h-xxx）不算「切换文章」，不能把阅读态关掉
+    if (/^#h-/.test(location.hash)) return;
+    closeReader();
   }
 
   document.addEventListener("click", function (e) {
@@ -133,6 +140,16 @@
       e.preventDefault();
       if (location.hash.indexOf("#a=") === 0) history.back();
       else closeReader();
+      return;
+    }
+
+    // 目录锚点：只滚动，不改 hash。改了 hash 会丢掉 #a=<id>，
+    // 刷新或后退就回到列表页了。
+    var jump = e.target.closest('#reader-body a[href^="#h-"]');
+    if (jump) {
+      e.preventDefault();
+      var target = document.getElementById(jump.getAttribute("href").slice(1));
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   });
 
