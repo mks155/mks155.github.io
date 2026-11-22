@@ -907,5 +907,71 @@ window.SNAKE_LLM_MODELS = [
     },
     note: "点开始游戏才动，四路操作都能转，吃到食物会炸开小光点并飘出加分，撞死时画面会抖一下。吃得越多跑得越快，最高分刷新后还在，只是没有声音。",
     tags: ["可玩", "加速节奏", "粒子"]
+  },
+  {
+    id: "inkling-2-mini-q2_k_xl-none",
+    name: "Inkling-2-Mini (None)",
+    file: "models/Inkling-2-Mini-GGUF · UD-Q2_K_XL(none).html",
+    family: "Inkling-2-Mini",
+    quant: "UD-Q2_K_XL",
+    backend: "Unsloth Desktop",
+    tps: 50.0,
+    uploadedAt: "2026-11-21",
+    review: {
+      rubric: "1.0",
+      score: 645,
+      grade: "B",
+      verdict: "可玩",
+      evidence: "[T1 实测] 载入即自动开局，无输入 900ms 内画面指纹变化 => 自动开局；[T1b 实测] 2.5 秒采样 11 次变化、间隔均值约 101ms（声明 110ms）=> 生存测试通过 => boot 200。[T3 实测] 直接读取全局 dir：未按键时为 {1,0}，ArrowUp 与 w 派发后均为 {0,-1} => 方向键与 WASD 生效；源码无屏幕方向键、全文无 touch 事件 => ctrl 70。[T4 实测] 朝右派发 ArrowLeft 后 dir 仍为 {1,0} => 180° 被拒；[静态判定] 撞墙判死、自撞用 snake.slice(0,-1) 排除尾节、placeFood 用 do/while 排除蛇身 => rule 四项全对 => 60。[T5 实测] 连续喂食后 speed 实测 110→108→106→104 => 渐进加速 => pace 125。[T8 实测] 受控喂食 score 0→10、蛇长 3→4；页面无最高分元素、localStorage 为空 => 计分正确但没有最高分 => score 60。[T6 静态] 圆角蛇身、头部双色 + 随方向偏移的双眼、圆角食物与网格线，吃到无任何画面反馈 => vis 85。[T7 实测] 全文无 AudioContext / 音频调用 => sfx 0。[T9 实测] 全程 0 条未捕获异常；结束画面画在 canvas 上、重开按钮与 R 键均可用，但产物没有任何暂停功能 => rob 45；死亡走 alert() 会阻塞页面，属体验问题、不另扣分。[T10 静态] 画布固定 400x400，无 DPR、无 resize 监听、无媒体查询，窄视口下横向溢出 => adp 0。",
+      subs: { boot: 200, ctrl: 70, rule: 60, pace: 125, score: 60, vis: 85, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 330, feel: 185, show: 85, done: 45 },
+      defects: ["NO_SWIPE", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在跑，方向键和 WASD 都能转，吃得越多跑得越快，蛇眼会跟着方向动。没有最高分和声音，撞死会弹系统提示框。",
+    tags: ["可玩", "加速节奏", "最高分失效"]
+  },
+  {
+    id: "inkling-2-mini-q2_k_xl-medium",
+    name: "Inkling-2-Mini (Medium)",
+    file: "models/Inkling-2-Mini-GGUF · UD-Q2_K_XL(medium).html",
+    family: "Inkling-2-Mini",
+    quant: "UD-Q2_K_XL",
+    backend: "Unsloth Desktop",
+    tps: 49.5,
+    uploadedAt: "2026-11-21",
+    review: {
+      rubric: "1.0",
+      score: 505,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 载入即自动开局，无输入 900ms 内画面变化 => 自动开局；[T1b 实测] 2.5 秒采样 10 次变化、间隔均值约 101ms（声明 120ms）=> 生存测试通过 => boot 200。[T3 实测] 直接读取全局 dir：未按键时为 {1,0}，ArrowUp 与 w 派发后均为 {0,-1} => 方向键与 WASD 生效；源码无屏幕方向键、全文无 touch 事件 => ctrl 70。[T4 实测] 朝右派发 ArrowLeft 后 dir 仍为 {1,0} => 180° 被拒；[静态判定] 自撞用 snake.some 遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；撞墙判死与 randomFoodPos 避开蛇身正常 => 错一项 => rule 45。[T5 实测] 间隔均值约 101ms；源码只有一处 setInterval(update,120)，全文无速度赋值 => 固定速度 => pace 30。[T8 实测] 受控喂食 score 0→10、蛇长 4→5；页面只显示「得分」，无最高分元素、localStorage 为空 => score 60。[T6 静态] 纯色块蛇身（头浅身深）+ 纯色圆形食物 + 极淡网格，吃到与死亡都无画面反馈 => vis 55。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 全程 0 条未捕获异常；结束遮罩在 position:relative 的容器内、按钮与空格均可重开，但产物没有任何暂停功能 => rob 45。[T10 静态] 画布固定 400x400，无 DPR、无 resize 监听、无媒体查询，窄视口下横向溢出 => adp 0。",
+      subs: { boot: 200, ctrl: 70, rule: 45, pace: 30, score: 60, vis: 55, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 315, feel: 90, show: 55, done: 45 },
+      defects: ["TAIL_COLLISION", "NO_SWIPE", "NO_ACCEL", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
+    },
+    note: "打开就在跑，方向键和 WASD 都能转，吃到食物加十分。速度一直不变，没有最高分和声音，贴着自己尾巴转会被判撞死。",
+    tags: ["可玩", "无加速", "最高分失效"]
+  },
+  {
+    id: "inkling-2-mini-q2_k_xl-max",
+    name: "Inkling-2-Mini (Max)",
+    file: "models/Inkling-2-Mini-GGUF · UD-Q2_K_XL(max).html",
+    family: "Inkling-2-Mini",
+    quant: "UD-Q2_K_XL",
+    backend: "Unsloth Desktop",
+    tps: 49.7,
+    uploadedAt: "2026-11-21",
+    review: {
+      rubric: "1.0",
+      score: 505,
+      grade: "C",
+      verdict: "可玩",
+      evidence: "[T1 实测] 载入即自动开局，无输入 900ms 内画面变化 => 自动开局；[T1b 实测] 2.5 秒采样 10 次变化、间隔均值约 111ms（声明 140ms）=> 生存测试通过 => boot 200。[T3 实测] 直接读取全局 direction：未按键时为 {1,0}，ArrowUp 与 w 派发后均为 {0,-1} => 方向键与 WASD 生效；源码无屏幕方向键、全文无 touch 事件 => ctrl 70。[T4 实测] 朝右派发 ArrowLeft 后 direction 仍为 {1,0} => 180° 被拒；[静态判定] 自撞用 for 循环遍历整条蛇、含本步即将移走的尾节 => TAIL_COLLISION；撞墙判死与 placeFood 避开蛇身正常 => 错一项 => rule 45。[T5 实测] 间隔均值约 111ms；源码 setInterval(update,140) 只有一处、全文无速度赋值 => 固定速度 => pace 30。[T8 实测] 受控喂食 score 0→1、蛇长 3→4；页面只显示「得分」，无最高分元素、localStorage 为空 => score 60。[T6 静态] 纯色方块蛇身（头亮身暗）+ 纯色圆形食物，无网格、无蛇眼，吃到无画面反馈 => vis 55。[T7 实测] 全文无音频接口 => sfx 0。[T9 实测] 空格暂停后 400ms 蛇头未移动、再按一次恢复移动；R 与结束遮罩均可重开；全程 0 条未捕获异常；但源码里的 loop()（requestAnimationFrame 主循环）定义后从未被调用 => DEAD_CODE => rob 45。[T10 静态] 画布固定 400x400，无 DPR、无 resize 监听、无媒体查询，窄视口下横向溢出 => adp 0。",
+      subs: { boot: 200, ctrl: 70, rule: 45, pace: 30, score: 60, vis: 55, sfx: 0, rob: 45, adp: 0 },
+      axes: { play: 315, feel: 90, show: 55, done: 45 },
+      defects: ["TAIL_COLLISION", "NO_SWIPE", "NO_ACCEL", "NO_PERSIST", "NO_SOUND", "NO_RESIZE", "DEAD_CODE"]
+    },
+    note: "打开就在跑，方向键和 WASD 都能转，空格能暂停、R 能重开，吃到食物加一分。速度不变，没有最高分和声音，贴着自己尾巴转会判死。",
+    tags: ["可玩", "无加速", "最高分失效"]
   }
 ];
