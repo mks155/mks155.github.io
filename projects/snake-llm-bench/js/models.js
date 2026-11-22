@@ -253,16 +253,16 @@ window.SNAKE_LLM_MODELS = [
     uploadedAt: "2026-10-09",
     review: {
       rubric: "1.0",
-      score: 835,
-      grade: "A",
+      score: 635,
+      grade: "B",
       verdict: "可玩",
-      evidence: "[T2 实测] 「开始游戏」按钮 161x58 过命中测试 => boot 200；[T3 实测] 方向键与 WASD 通、touchstart/touchmove/touchend 均已绑定、无屏幕方向键 => ctrl 55；[静态判定] 坐标用取模回绕，撞墙判定恒不成立、蛇从边界穿到另一侧，核心判定失效 => rule 0；生成食物亦不检查蛇身；[T5 实测] 间隔由 120 递减至 60 且每次进食重建定时器 => pace 125；[T8 实测] 分数、最高分、结算分三元素齐备，另有新纪录提示，读写同一 localStorage 键 => score 125；[T7 实测] 吃到、死亡、暂停、转向四类音效均已接线 => sfx 100；[T6 实测] 内容占比 28%、颜色数 103，渐变与发光确实在渲染；但粒子更新函数定义后从未被调用、食物脉冲变量只被赋初值从未自增，故两处特效静止、死亡亦无反馈 => vis 115；[T9 实测] 无未捕获异常，遮罩定位祖先为 relative 而非 static，暂停/重开/返回菜单均可用 => rob 90；[T10 实测] 无 DPR、无 resize、画布固定 400x400 => adp 25。ctrl 55 的证据强度：[N] 本轮实测 touchstart/touchmove/touchend 均已绑定 => 滑动通路存在；[N] 页面仅有 start-btn 161x58 与 pause-btn 50x50，无屏幕方向键控件；[S] 方向键与 WASD 的转向效果为源码通读（keyMap 含 8 个键名），未实测。",
-      subs: { boot: 200, ctrl: 55, rule: 0, pace: 125, score: 125, vis: 115, sfx: 100, rob: 90, adp: 25 },
-      axes: { play: 255, feel: 250, show: 215, done: 115 },
-      defects: ["WALL_WRAP", "FOOD_ON_SNAKE", "PARTICLE_FROZEN", "DEAD_CODE", "NO_RESIZE"]
+      evidence: "[T2 实测] 「开始游戏」160x58、elementFromPoint 命中自身 => 可达；点击后 [T1b 实测] 变化 6 次、首次 93ms、间隔 93–125ms（声明 120ms）=> boot 200。[T3 实测] 派发 ArrowUp 与 w 后 nextDirection 均为 up；构造 TouchEvent 上滑后 nextDirection 变为 up => 键盘与滑动可用；页面只有 pause-btn 一个 .control-btn，无屏幕方向键 => ctrl 55。[T4 实测] 朝右按 ArrowLeft 后 nextDirection 直接变为 left，下一步撞上自己脖子判「咬到自己了」=> 没有 180° 保护；[静态判定+实测] 坐标用取模回绕、墙壁判定恒不成立，实测蛇头从 x=19 穿到 x=1 不判死；自撞循环遍历整条蛇含尾节，实测贴尾转向立即判死；spawnFood 不检查蛇身 => rule 0。[T5 实测] 每吃一个 gameSpeed 120→118→116 且重建定时器 => 渐进加速 => pace 125。[T8 实测] 连吃两个，内部 score 10/20、最高分 10/20 并写入 localStorage，但 HUD 分数元素始终显示 0（源码只在 startGame 里赋过 '0'）=> 涨分与进食不同步 => score 25。[T6 实测] 渐变蛇身、条纹、发光食物、轨迹线；但 20 个粒子全部静止（updateParticles 从未被调用，life 不减、坐标不变）、foodPulse 恒为 0；眼睛画在 index=snake.length-1 的尾节（实测纯黑像素只出现在尾节格子）=> 吃到反馈未生效 => vis 85。[T7 实测] audioCtx.state=running，eat 与 die 均已接线 => sfx 100。[T9 实测] 0 条未捕获异常；但点击暂停会弹出「游戏结束」面板（复用 game-over-screen，显示旧最终分与重开/返回菜单按钮），属非致命交互缺陷 => rob 45。[T10 静态] 画布固定 400x400，无 DPR、无 resize 监听，@media(max-width:480px) 只改字号不缩放画布 => adp 0。",
+      subs: { boot: 200, ctrl: 55, rule: 0, pace: 125, score: 25, vis: 85, sfx: 100, rob: 45, adp: 0 },
+      axes: { play: 255, feel: 150, show: 185, done: 45 },
+      defects: ["WALL_WRAP", "TAIL_COLLISION", "FOOD_ON_SNAKE", "PARTICLE_FROZEN", "DEAD_CODE", "NO_RESIZE"]
     },
-    note: "蛇身有渐变和会转的眼睛，食物发光，吃到有音效和飘字，最高分也记着。但蛇会直接从墙穿到另一边，撞不死。",
-    tags: ["可玩", "音效", "漂浮加分", "穿墙不判死"]
+    note: "吃到食物有音效，最高分也记得住，但顶上的分数栏一直显示 0。蛇会从墙里穿到另一边撞不死，按暂停弹出的却是游戏结束面板。",
+    tags: ["可玩", "音效", "穿墙不判死"]
   },
   {
     id: "qwen3.8-flash-next-coder-iq1_m",
@@ -851,13 +851,13 @@ window.SNAKE_LLM_MODELS = [
     uploadedAt: "2026-11-17",
     review: {
       rubric: "1.0",
-      score: 695,
+      score: 715,
       grade: "B",
       verdict: "可玩",
-      evidence: "[T1 实测] 无输入采样 1 秒画面变化 0 次，不自动开局。[T2 实测] 开始面板里的「开始游戏」142x49、elementFromPoint 命中自身 => 可达；点击后 [T1b 实测] 6 秒内变化 9 次、首次 202ms => boot 200。[T3 实测] 不按键时撞右墙（白色蛇眼 x 290→390）；ArrowUp 与 w 均改为撞上墙（蛇眼 y 126→26）=> 方向键与 WASD 生效；[静态判定] .dpad 屏幕方向键在 max-width:700px 显示、全文无 touch 滑动 => ctrl 70。[T4 实测] 朝右按 ArrowLeft 仍撞右墙 => 180° 被拒；[静态判定] 自撞用 slice(0,-1) 排除尾节、placeFood 用 do/while 排除蛇身 => rule 四项全对 => 60。[T8 实测] 受控食物连吃 3 个，分数 30、最高分 30，但全文无 localStorage，刷新后最高分归 0 => 计分正确、最高分不落盘 => score 60。[静态判定] 每吃一个 speed -4（下限 60）=> 渐进加速 => pace 125；渐变蛇身 + 头部发光 + 随方向转动的双眼 + 脉冲发光食物，吃到无反馈 => vis 85；无音频接口 => sfx 0；.overlay 为 position:fixed 覆盖全视口 => OVERLAY_ANCHOR；暂停与重开可用 => rob 70；只有 max-width:700px 的 CSS 缩放 => adp 25。[T9 实测] 全程 0 条未捕获异常。",
-      subs: { boot: 200, ctrl: 70, rule: 60, pace: 125, score: 60, vis: 85, sfx: 0, rob: 70, adp: 25 },
-      axes: { play: 330, feel: 185, show: 85, done: 95 },
-      defects: ["NO_SWIPE", "NO_PERSIST", "OVERLAY_ANCHOR", "NO_SOUND", "NO_RESIZE"]
+      evidence: "[T1 实测] 载入后开始遮罩常驻，无输入 900ms 画面指纹不变 => 不自动开局。[T2 实测] 开始面板里的「开始游戏」114x39、elementFromPoint 命中自身 => 可达；点击后 [T1b 实测] 变化 8 次、首次 123ms、间隔均值约 147ms（源码 speed=150ms）=> boot 200。[T3 实测] 派发 ArrowUp 与 w 后 dir 均为 {0,-1} => 方向键与 WASD 生效；320px 窄视口下 .dpad 实测 display:grid，▲▼▶ 三个按钮 60x50、均在视口内且 elementFromPoint 命中自身，逐个点击后 nextDir 分别变为 up/down/right，◀ 因与当前方向相反被拒 => 屏幕方向键可用；全文无 touch 事件 => 无滑动 => ctrl 70。[T4 实测] 朝右按 ArrowLeft 后 dir 与 nextDir 均保持 {1,0} => 180° 被拒；[静态判定] 撞墙判死、自撞用 slice(0,-1) 排除尾节、placeFood 用 do/while 排除蛇身 => rule 四项全对 => 60。[T5 实测] 连吃 5 个食物，speed 实测 150→146→142→138（下限 60），loop() 每次重读 speed => 渐进加速 => pace 125。[T8 实测] 受控连吃 3 个，HUD 分数 30、最高分同步 30，localStorage 为空、刷新后最高分归 0 => 计分正确但不落盘 => score 60。[T6 静态] 渐变蛇身 + 头部发光 + 随方向转动的双眼 + 呼吸式脉冲发光食物，吃到无画面反馈 => vis 85。[T7 实测] 全文无 AudioContext / 音频调用 => sfx 0。[T9 实测] 全程 0 条未捕获异常；空格暂停后 400ms 蛇头不动、再按恢复，R 键重开回到 3 节 0 分；结束遮罩为 position:fixed 的全屏 modal，320x654 下遮罩面板中心 (160,327) 与画布中心 (160,313) 仅差 14px，不存在相对 static 祖先漂移的问题 => rob 90。[T10 静态] 无 DPR、无 resize 监听，仅 max-width:700px 的 CSS 缩放（画布 backing 仍 400x400）=> adp 25。",
+      subs: { boot: 200, ctrl: 70, rule: 60, pace: 125, score: 60, vis: 85, sfx: 0, rob: 90, adp: 25 },
+      axes: { play: 330, feel: 185, show: 85, done: 115 },
+      defects: ["NO_SWIPE", "NO_PERSIST", "NO_SOUND", "NO_RESIZE"]
     },
     note: "点开始游戏才动，方向键、WASD 和屏幕方向键都能转，吃得越多跑得越快。最高分一刷新就归零，也没有声音。",
     tags: ["可玩", "加速节奏", "最高分失效"]
